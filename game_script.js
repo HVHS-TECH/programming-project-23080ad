@@ -19,6 +19,9 @@ var enemySpawnPositioning = 0;
 var enemyNumber = 0;
 var spawnCounter = 0;
 
+//rock spawning variables
+var rockNumber = -1;
+
 /*******************************************************/
 function setup() {
 	console.log("setup: ");
@@ -41,10 +44,9 @@ function setup() {
 	rockGroup = new Group();
 
 	//create afew rocks on game start
-	for (rocks = 0; rocks < floor(random(6, 12.999)); rocks++) {
+	for (rocks = 0; rocks < 15; rocks++) {
 		createRock()
 	}
-
 
 	//hollow purple
 	hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
@@ -52,16 +54,29 @@ function setup() {
 	hollow_purple.color = 'purple';
 }
 
-
-
-
 /*******************************************************/
 // draw()
 /*******************************************************/
 function draw() {
 
 	//stops rocks from generating over eachother
-	rockGroup.collides(rockGroup, createRock)
+	for (let i = 0; i < enemyGroup.length; i++) {
+		let rockA = enemyGroup[i];
+
+		for (let j = 0; j < enemyGroup.lenght; j++) {
+			let rockB = enemyGroup[j];
+
+			if (rockA !== rockB) {
+				if (rockA.overlaps(rockB)) {
+					deleteRock(rockA, rockB);
+				}
+			}
+
+		}
+
+	}
+
+	//rockGroup.overlaps(rockGroup[1], deleteRock);
 
 	//color the bg
 	background('grey');
@@ -69,8 +84,21 @@ function draw() {
 	//direct the Hollow Purple
 	hollow_purple.moveTo(mouse, 10);
 
-
 	//ENEMY SPAWNING
+	enemySpawning();
+
+	//PLAYER MOVEMENT
+	playerMovement();
+
+	//PLAYER, OBSTACLE & ENEMY INTERACTION
+
+	//stop the player from bouncing off rocks and enemies
+	rockGroup.collided(player, playerCollidesSolid);
+	enemyGroup.collided(player, playerCollidesSolid);
+}
+
+
+function enemySpawning() {
 
 	//make spawned enemies move towards the player by targeting their group
 	for (let enemy of enemyGroup) {
@@ -88,9 +116,8 @@ function draw() {
 	// Due to the minute differences 4.999 should be reasonable
 
 	//Spawn an enemy every 5 seconds
-
 	if (spawnCounter < 5 * gameSpeed / 3) {
-		spawnCounter = spawnCounter + 1;
+		//spawnCounter = spawnCounter + 1;
 	}
 	else if (spawnCounter == 5 * gameSpeed / 3) {
 
@@ -98,55 +125,51 @@ function draw() {
 		// so to spawn an enemy every five seconds we make the counter tick up to (5 x the "gameSpeed" variable)
 		// before spawning an enemy and resetting.
 		//
-		// right now we seem to be able to spawn around 550 enemies on the school before the game begins to slow down. 
+		// right now we seem to be able to spawn around 550 enemies on the school before the game begins to slow down.
 		// NOTE: this may only be possible due to the lack of other objects on the screen
 
 		//set enemy spawn coordinates
 
-		//spawns an enemy from the left edge
+		//spawns an enemy from the left edge  of screen
 		if (enemySpawnPositioning == 1) {
 			enemyNumber = enemyNumber + 1;
 			enemy = new Sprite(0, random(0, windowHeight), 20, 20);
 
 			enemyGroup.add(enemy);
-
 			spawnCounter = 0;
 		}
-		//spawns an enemy from the right edge
+		//spawns an enemy from the right edge  of screen
 		else if (enemySpawnPositioning == 2) {
 			enemyNumber = enemyNumber + 1;
 			enemy = new Sprite(windowWidth, random(0, windowHeight), 20, 20);
 
 			enemyGroup.add(enemy);
-
 			spawnCounter = 0;
 		}
-		//spawns an enemy from the top edge
+		//spawns an enemy from the top edge  of screen
 		else if (enemySpawnPositioning == 3) {
 			enemyNumber = enemyNumber + 1;
 			enemy = new Sprite(random(0, windowWidth), 0, 20, 20);
 
 			enemyGroup.add(enemy);
-
 			spawnCounter = 0;
 		}
-		//spawns an enemy from the bottom edge
+		//spawns an enemy from the bottom edge of screen
 		else if (enemySpawnPositioning == 4) {
 			enemyNumber = enemyNumber + 1;
 			enemy = new Sprite(random(0, windowWidth), windowHeight, 20, 20);
 
 			enemyGroup.add(enemy);
-
 			spawnCounter = 0;
 		}
-
 		console.log(enemyGroup);
 		console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
 		console.log("Enemy Number " + enemyNumber);
 	}
+}
 
 
-	//PLAYER MOVEMENT SCRIPT
+function playerMovement() {
 
 	//LEFT
 	if (kb.pressing('left')) {
@@ -179,16 +202,7 @@ function draw() {
 	else if (kb.released('down')) {
 		player.vel.y = 0;
 	}
-
-
-	//PLAYER & ENEMY INTERACTION
-
-	//stop the player from bouncing off rocks and enemies
-	rockGroup.collided(player, playerCollidesSolid);
-	enemyGroup.collided(player, playerCollidesSolid);
-
 }
-
 
 //stop the player from bouncing off rocks and enemies
 function playerCollidesSolid() {
@@ -198,15 +212,23 @@ function playerCollidesSolid() {
 
 //create a rock
 function createRock() {
-	rock = new Sprite(random(0, windowWidth), random(0, windowHeight), 50, 'k');
+	let rock = new rockGroup.Sprite(random(0, windowWidth), random(0, windowHeight), 50, 'k');
 	rock.mass = 0.1;
-	rockGroup.add(rock);
+	rockNumber = rockNumber + 1;
+	rock.name = "rock " + rockNumber;
+	console.log(rockGroup);
+	// new rock spawned gets a unique name and number
+	// corresponding to its place in the rockGroup/Array
+}
 
+//delete a rock
+function deleteRock(_ssss, _rockGroup) {
+	console.log("rock self collision test");
+	_ssss.remove();
+	createRock();
 }
 
 /*******************************************************/
 //  END of code
 /*******************************************************/
-
-
 
