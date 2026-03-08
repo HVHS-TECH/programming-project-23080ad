@@ -45,7 +45,7 @@ function setup() {
 
 	//create afew rocks on game start
 	for (rocks = 0; rocks < 15; rocks++) {
-		createRock()
+		createRock();
 	}
 
 	//hollow purple
@@ -59,24 +59,9 @@ function setup() {
 /*******************************************************/
 function draw() {
 
-	//stops rocks from generating over eachother
-	for (let i = 0; i < enemyGroup.length; i++) {
-		let rockA = enemyGroup[i];
-
-		for (let j = 0; j < enemyGroup.lenght; j++) {
-			let rockB = enemyGroup[j];
-
-			if (rockA !== rockB) {
-				if (rockA.overlaps(rockB)) {
-					deleteRock(rockA, rockB);
-				}
-			}
-
-		}
-
+	if (kb.pressing('space')) {
+		deleteRock();
 	}
-
-	//rockGroup.overlaps(rockGroup[1], deleteRock);
 
 	//color the bg
 	background('grey');
@@ -212,17 +197,34 @@ function playerCollidesSolid() {
 
 //create a rock
 function createRock() {
-	let rock = new rockGroup.Sprite(random(0, windowWidth), random(0, windowHeight), 50, 'k');
+	let rock = new Sprite(random(0, windowWidth), random(0, windowHeight), 50, 'k');
 	rock.mass = 0.1;
 	rockNumber = rockNumber + 1;
 	rock.name = "rock " + rockNumber;
+	//for (let i = 0; i < rockGroup.length; i++) {
+		//let rockA = rockGroup[i];
+		//console.log("check 1");
+/* 
+		for (let j = 0; j < rockGroup.length; j++) {
+			let rockB = rockGroup[j];
+			console.log("check 2");
+
+			if (rockA !== rockB) {
+				if (rockA.collides(rockB)) {
+					console.log("check 3");
+					deleteRock(rockA, rockB);
+				}
+			}
+		}
+	} */
+	rockGroup.add(rock);
 	console.log(rockGroup);
 	// new rock spawned gets a unique name and number
 	// corresponding to its place in the rockGroup/Array
 }
 
 //delete a rock
-function deleteRock(_ssss, _rockGroup) {
+function deleteRock(_ssss, ) {
 	console.log("rock self collision test");
 	_ssss.remove();
 	createRock();
