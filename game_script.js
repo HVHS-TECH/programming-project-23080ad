@@ -193,6 +193,7 @@ function playerMovement() {
 function playerCollidesSolid() {
 	player.vel.x = 0;
 	player.vel.y = 0;
+	
 }
 
 //create a rock
@@ -202,21 +203,22 @@ function createRock() {
 	rockNumber = rockNumber + 1;
 	rock.name = "rock " + rockNumber;
 	//for (let i = 0; i < rockGroup.length; i++) {
-		//let rockA = rockGroup[i];
-		//console.log("check 1");
-/* 
-		for (let j = 0; j < rockGroup.length; j++) {
-			let rockB = rockGroup[j];
-			console.log("check 2");
-
-			if (rockA !== rockB) {
-				if (rockA.collides(rockB)) {
-					console.log("check 3");
-					deleteRock(rockA, rockB);
+	//let rockA = rockGroup[i];
+	//console.log("check 1");
+	/* 
+			for (let j = 0; j < rockGroup.length; j++) {
+				let rockB = rockGroup[j];
+				console.log("check 2");
+	
+				if (rockA !== rockB) {
+					if (rockA.collides(rockB)) {
+						console.log("check 3");
+						deleteRock(rockA, rockB);
+					}
 				}
 			}
-		}
-	} */
+		} */
+
 	rockGroup.add(rock);
 	console.log(rockGroup);
 	// new rock spawned gets a unique name and number
@@ -224,11 +226,14 @@ function createRock() {
 }
 
 //delete a rock
-function deleteRock(_ssss, ) {
+/*
+function deleteRock() {
 	console.log("rock self collision test");
 	_ssss.remove();
 	createRock();
 }
+*/
+
 
 /*******************************************************/
 //  END of code
