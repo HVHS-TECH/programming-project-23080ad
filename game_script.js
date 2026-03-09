@@ -193,7 +193,7 @@ function playerMovement() {
 function playerCollidesSolid() {
 	player.vel.x = 0;
 	player.vel.y = 0;
-	
+
 }
 
 //create a rock
@@ -226,13 +226,13 @@ function createRock() {
 }
 
 //delete a rock
-/*
+
 function deleteRock() {
 	console.log("rock self collision test");
 	_ssss.remove();
 	createRock();
 }
-*/
+
 
 
 /*******************************************************/
