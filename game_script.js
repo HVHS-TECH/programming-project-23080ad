@@ -23,6 +23,8 @@ var spawnCounter = 0;
 var rockNumber = -1;
 
 /*******************************************************/
+// setup()
+/*******************************************************/
 function setup() {
 	console.log("setup: ");
 
@@ -32,26 +34,32 @@ function setup() {
 	//draw the canvas
 	cnv = new Canvas(windowWidth - 20, windowHeight - 20);
 
+}
+/*******************************************************/
+// new round start()
+/*******************************************************/
+function newRound (){
 	//create the player charcter
 	player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
 	player.rotationLock = 1;
 	//player.immovable = true;
-
+	
 	//test = new Sprite(windowWidth / 4, windowHeight / 2, playerScale, playerScale);
-
+	
 	//create the various sprite groups
 	enemyGroup = new Group();
 	rockGroup = new Group();
-
+	
 	//create afew rocks on game start
 	for (rocks = 0; rocks < 15; rocks++) {
 		createRock();
 	}
-
+	
 	//hollow purple
 	hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
 	hollow_purple.mass = 10000000;
 	hollow_purple.color = 'purple';
+	
 }
 
 /*******************************************************/
@@ -59,13 +67,15 @@ function setup() {
 /*******************************************************/
 function draw() {
 
-	if (kb.pressing('space')) {
-		deleteRock();
-	}
-
 	//color the bg
 	background('grey');
 
+	//draw the Title
+	textSize(100);
+	fill('red');
+	textAlign(CENTER);
+	text("Test title", windowWidth/2, windowHeight/2);
+	
 	//direct the Hollow Purple
 	hollow_purple.moveTo(mouse, 10);
 
@@ -217,7 +227,8 @@ function createRock() {
 					}
 				}
 			}
-		} */
+		} 
+	*/
 
 	rockGroup.add(rock);
 	console.log(rockGroup);
@@ -226,13 +237,13 @@ function createRock() {
 }
 
 //delete a rock
-
+/*
 function deleteRock() {
 	console.log("rock self collision test");
 	_ssss.remove();
 	createRock();
 }
-
+*/
 
 
 /*******************************************************/
