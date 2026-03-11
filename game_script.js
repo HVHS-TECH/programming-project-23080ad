@@ -9,6 +9,7 @@
 
 //world setup variables
 var gameSpeed = 60;
+var roundStart = false;
 
 //player movement variables
 var playerVel = 5;
@@ -34,32 +35,34 @@ function setup() {
 	//draw the canvas
 	cnv = new Canvas(windowWidth - 20, windowHeight - 20);
 
+
 }
 /*******************************************************/
 // new round start()
 /*******************************************************/
-function newRound (){
+function newRound() {
 	//create the player charcter
 	player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
 	player.rotationLock = 1;
 	//player.immovable = true;
-	
+
 	//test = new Sprite(windowWidth / 4, windowHeight / 2, playerScale, playerScale);
-	
+
 	//create the various sprite groups
 	enemyGroup = new Group();
 	rockGroup = new Group();
-	
+
 	//create afew rocks on game start
 	for (rocks = 0; rocks < 15; rocks++) {
 		createRock();
 	}
-	
+
 	//hollow purple
 	hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
 	hollow_purple.mass = 10000000;
 	hollow_purple.color = 'purple';
-	
+
+	roundStart = true;
 }
 
 /*******************************************************/
@@ -74,24 +77,24 @@ function draw() {
 	textSize(100);
 	fill('red');
 	textAlign(CENTER);
-	text("Test title", windowWidth/2, windowHeight/2);
-	
-	//direct the Hollow Purple
-	hollow_purple.moveTo(mouse, 10);
+	text("Test title", windowWidth / 2, windowHeight / 2);
+	if (roundStart = true) {
+		//direct the Hollow Purple
+		//hollow_purple.moveTo(mouse, 10);
 
-	//ENEMY SPAWNING
-	enemySpawning();
+		//ENEMY SPAWNING
+		enemySpawning();
 
-	//PLAYER MOVEMENT
-	playerMovement();
+		//PLAYER MOVEMENT
+		playerMovement();
 
-	//PLAYER, OBSTACLE & ENEMY INTERACTION
+		//PLAYER, OBSTACLE & ENEMY INTERACTION
 
-	//stop the player from bouncing off rocks and enemies
-	rockGroup.collided(player, playerCollidesSolid);
-	enemyGroup.collided(player, playerCollidesSolid);
+		//stop the player from bouncing off rocks and enemies
+		rockGroup.collided(player, playerCollidesSolid);
+		enemyGroup.collided(player, playerCollidesSolid);
+	}
 }
-
 
 function enemySpawning() {
 
@@ -103,7 +106,7 @@ function enemySpawning() {
 	}
 
 	//choose which side of the screen enemies spawn from
-	enemySpawnPositioning = floor(random(1, 4.999));
+	enemySpawnPositioning = floor(random(1, 4.999999999999999999999999999999999999));
 	//NOTE: since the floor function rounds down a value to the nearest whole number
 	// we must set the range to just higher than the top value we want to be possible.
 	// however it must be as far higher as possible to make sure each options has the largest
@@ -111,10 +114,10 @@ function enemySpawning() {
 	// Due to the minute differences 4.999 should be reasonable
 
 	//Spawn an enemy every 5 seconds
-	if (spawnCounter < 5 * gameSpeed / 3) {
-		//spawnCounter = spawnCounter + 1;
+	if (spawnCounter < 5 / 3 * gameSpeed) {
+		spawnCounter++;
 	}
-	else if (spawnCounter == 5 * gameSpeed / 3) {
+	else if (spawnCounter >= 5 / 3 * gameSpeed) {
 
 		// since our frame rate is set to 60fps, the draw loop runs that many times per second.
 		// so to spawn an enemy every five seconds we make the counter tick up to (5 x the "gameSpeed" variable)
