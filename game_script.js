@@ -9,7 +9,7 @@
 
 //world setup variables
 var gameSpeed = 60;
-var roundStart = false;
+var roundStart = 0;
 
 //player movement variables
 var playerVel = 5;
@@ -35,12 +35,6 @@ function setup() {
 	//draw the canvas
 	cnv = new Canvas(windowWidth - 20, windowHeight - 20);
 
-
-}
-/*******************************************************/
-// new round start()
-/*******************************************************/
-function newRound() {
 	//create the player charcter
 	player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
 	player.rotationLock = 1;
@@ -62,14 +56,14 @@ function newRound() {
 	hollow_purple.mass = 10000000;
 	hollow_purple.color = 'purple';
 
-	roundStart = true;
+
 }
 
 /*******************************************************/
 // draw()
 /*******************************************************/
 function draw() {
-
+	
 	//color the bg
 	background('grey');
 
@@ -78,7 +72,7 @@ function draw() {
 	fill('red');
 	textAlign(CENTER);
 	text("Test title", windowWidth / 2, windowHeight / 2);
-	if (roundStart = true) {
+	if (roundStart > 1) {
 		//direct the Hollow Purple
 		//hollow_purple.moveTo(mouse, 10);
 
