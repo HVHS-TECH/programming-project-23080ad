@@ -10,6 +10,7 @@
 //world setup variables
 var gameSpeed = 60;
 var roundStart = 0;
+var score = 0;
 
 //player movement variables
 var playerVel = 5;
@@ -32,13 +33,15 @@ function setup() {
 	//set game speed
 	frameRate(gameSpeed);
 
+
 	//draw the canvas
 	cnv = new Canvas(windowWidth - 20, windowHeight - 20);
 
 	//create the player charcter
 	player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
 	player.rotationLock = 1;
-	//player.immovable = true;
+	player.layer = 1;
+
 
 	//test = new Sprite(windowWidth / 4, windowHeight / 2, playerScale, playerScale);
 
@@ -51,11 +54,15 @@ function setup() {
 		createRock();
 	}
 
-	//hollow purple
+	//create the hollow purple
 	hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
 	hollow_purple.mass = 10000000;
 	hollow_purple.color = 'purple';
 
+	//create the start screen backdrop
+	start_backdrop = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n')
+	start_backdrop.color = 'black';
+	start_backdrop.opacity = 0.5;
 
 }
 
@@ -63,15 +70,27 @@ function setup() {
 // draw()
 /*******************************************************/
 function draw() {
+	score = (score++);
+	score = floor(frameRate/gameSpeed);
 	
-	//color the bg
+	console.log("score: " + score);
+
+	//color the gameplay bg
 	background('grey');
+	
+
+	//draws all sprites first so that the text object can then be drawn infront of them
+	allSprites.draw();
 
 	//draw the Title
 	textSize(100);
 	fill('red');
 	textAlign(CENTER);
 	text("Test title", windowWidth / 2, windowHeight / 2);
+
+
+	//when the start key is pressed roundStart variable becomes greater than one allowing
+	//the main game functions which are supposed to trigger on each iteration of the darw loop to activate.
 	if (roundStart > 1) {
 		//direct the Hollow Purple
 		//hollow_purple.moveTo(mouse, 10);
@@ -87,7 +106,10 @@ function draw() {
 		//stop the player from bouncing off rocks and enemies
 		rockGroup.collided(player, playerCollidesSolid);
 		enemyGroup.collided(player, playerCollidesSolid);
+		start_backdrop.visible = false;
+		text.visible = false;
 	}
+
 }
 
 function enemySpawning() {
