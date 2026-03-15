@@ -9,7 +9,7 @@
 
 //world setup variables
 var gameSpeed = 60;
-var roundStart = false;
+var roundPlay = false;
 var showTitle = true;
 
 //round timer variables
@@ -107,20 +107,26 @@ function draw() {
     }
 
     // Display the clock on screen
+    fill('white');
     textAlign(CENTER);
     textSize(32);
     text("Time: " + clockTime, width / 2, height / 4);
 
+    // display the players health on screen
+    fill('red');
+    textAlign(RIGHT);
+    textSize(32);
+    text("Health: " + playerHealth,  width - 100, height / 10);
+
     //draw the Title
     if (showTitle) {
         textSize(100);
-        fill('red');
         textAlign(CENTER);
         text("Test title", windowWidth / 2, windowHeight / 2);
     }
 
     //when the start key is pressed the main game functions which are supposed to trigger on each iteration of the darw loop activate.
-    if (roundStart) {
+    if (roundPlay) {
         //direct the Hollow Purple
         //hollow_purple.moveTo(mouse, 10);
 
@@ -153,7 +159,7 @@ function startRound() {
     //reseting and starting the clock
     clockStartTime = millis();
     clockIsOn = true;
-    roundStart = true;
+    roundPlay = true;
 
     //hiding elemnets from the start screen
     start_backdrop.visible = false;
@@ -320,14 +326,15 @@ function playerCollidesEnemy() {
 // roundOver()
 /*******************************************************/
 function roundOver() {
-    roundStart = false;
+    roundPlay = false;
     console.log("round is Over");
 
-    enemyGroup.vel.x = 0;
-    enemyGroup.vel.y = 0;
-    player.vel.x = 0;
-    player.vel.y = 0;
-
+    while (!roundPlay) {
+        enemyGroup.vel.x = 0;
+        enemyGroup.vel.y = 0;
+        player.vel.x = 0;
+        player.vel.y = 0;
+    }
 }
 
 
