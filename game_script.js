@@ -35,7 +35,7 @@ var enemyNumber = 0;
 var spawnCounter = 0;
 
 //player gets damaged variables
-var invic = 0;
+let invincabilityFrames = false;
 
 //rock spawning variables
 var rockNumber = -1;
@@ -294,13 +294,24 @@ function playerCollidesSolid() {
 /*******************************************************/
 
 //both inflicts damge and stops the player from bouncing off of enemies on contact
-async function playerCollidesEnemy() {
+function playerCollidesEnemy() {
     player.vel.x = 0;
     player.vel.y = 0;
 
-    await Delay(2000);
+    // if invicabilityFrames = true,
+    // the return stament will stop the rest of the function beyond it from triggering.
+    if (invincabilityFrames) return;
+
     playerHealth--;
-    console.log(playerHealth);
+    console.log("player health: " + playerHealth);
+
+    invincabilityFrames = true;
+
+    // this starts a timer that counts up too 2000 milliseconds
+    // before terminating and updating the invincabilityFrames variable to false.
+    setTimeout(() => {
+        invincabilityFrames = false;
+    }, 1000);
 
 }
 
