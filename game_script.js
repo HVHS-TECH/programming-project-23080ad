@@ -116,7 +116,7 @@ function draw() {
     fill('red');
     textAlign(RIGHT);
     textSize(32);
-    text("Health: " + playerHealth,  width - 100, height / 10);
+    text("Health: " + playerHealth, width - 100, height / 10);
 
     //draw the Title
     if (showTitle) {
@@ -141,10 +141,6 @@ function draw() {
         //stop the player from bouncing off rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
-
-        if (playerHealth < 1) {
-            roundOver();
-        }
     }
 
 
@@ -310,6 +306,9 @@ function playerCollidesEnemy() {
 
     playerHealth--;
     console.log("player health: " + playerHealth);
+    if (playerHealth < 1) {
+        roundOver()
+    }
 
     invincabilityFrames = true;
 
