@@ -9,7 +9,13 @@
 
 //world setup variables
 var gameSpeed = 60;
+
+//roundPlay indicates that the game is currently in a round. Meanwhile,
+//roundEnd indicates that a round has just finished. this does NOT include the time spent on the start screen before a round even starts.
 var roundPlay = false;
+var roundEnd = false;
+
+//formatting variables
 var showTitle = true;
 
 //round timer variables
@@ -25,6 +31,9 @@ var buttonY = 50;
 //In round player variables
 var playerVel = 5;
 var playerScale = 40;
+
+//player gets damaged variables
+let invincabilityFrames = false;
 var playerHealth = 5;
 
 //ENEMIES
@@ -34,16 +43,16 @@ var enemySpawnPositioning = 0;
 var enemyNumber = 0;
 var spawnCounter = 0;
 
-//player gets damaged variables
-let invincabilityFrames = false;
-
 //rock spawning variables
 var rockNumber = -1;
+
+//score variables
+var finalScore = 0;
 
 
 /*******************************************************/
 // setup()
-/*****************************************************/
+/*******************************************************/
 function setup() {
     console.log("setup: ");
 
@@ -106,43 +115,56 @@ function draw() {
         clockTime = floor((millis() - clockStartTime) / 1000);
     }
 
-    // Display the clock on screen
-    fill('white');
-    textAlign(CENTER);
-    textSize(32);
-    text("Time: " + clockTime, width / 2, height / 4);
-
-    // display the players health on screen
-    fill('red');
-    textAlign(RIGHT);
-    textSize(32);
-    text("Health: " + playerHealth, width - 100, height / 10);
-
     //draw the Title
     if (showTitle) {
+        fill('white');
         textSize(100);
         textAlign(CENTER);
         text("Test title", windowWidth / 2, windowHeight / 2);
     }
-
-    //when the start key is pressed the main game functions which are supposed to trigger on each iteration of the darw loop activate.
+    
+    
+    
+    //when the start button is pressed the main game functions which are supposed to trigger on each iteration of the darw loop activate. once the round ends these effects stop triggering until a new starts where on every value should be reset
     if (roundPlay) {
+        
+        // Display the clock on screen
+        fill('white');
+        textAlign(CENTER);
+        textSize(32);
+        text("Time: " + clockTime, width / 2, height / 4);
+        
+        // display the players health on screen
+        fill('red');
+        textAlign(RIGHT);
+        textSize(32);
+        text("Health: " + playerHealth, width - 100, height / 10);
+        
         //direct the Hollow Purple
         //hollow_purple.moveTo(mouse, 10);
-
+        
         //ENEMY SPAWNING
         enemySpawning();
-
+        
         //PLAYER MOVEMENT
         playerMovement();
-
+        
         //PLAYER, OBSTACLE & ENEMY INTERACTION
-
+        
         //stop the player from bouncing off rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
     }
+    
+    //ROUND OVER triggers
 
+    //displays final score
+    if (roundEnd) {
+        fill('white');
+        textAlign(CENTER);
+        textSize(32);
+        text("FINAL SCORE: " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+    }
 
 }
 
@@ -184,14 +206,14 @@ function enemySpawning() {
     // number of possible opprtunites to be selected.
     // Due to the minute differences 4.999 should be reasonable
 
-    //Spawn an enemy every 5 seconds
+    //Spawn an enemy every 5/3 seconds
     if (spawnCounter < 5 / 3 * gameSpeed) {
         spawnCounter++;
     }
     else if (spawnCounter >= 5 / 3 * gameSpeed) {
 
         // since our frame rate is set to 60fps, the draw loop runs that many times per second.
-        // so to spawn an enemy every five seconds we make the counter tick up to (5 x the "gameSpeed" variable)
+        // so to spawn an enemy every five seconds we make the counter tick up to (5/3 x the "gameSpeed" variable)
         // before spawning an enemy and resetting.
         //
         // right now we seem to be able to spawn around 550 enemies on the school before the game begins to slow down.
@@ -286,8 +308,6 @@ function playerMovement() {
 function playerCollidesSolid() {
     player.vel.x = 0;
     player.vel.y = 0;
-
-
 }
 
 
@@ -312,7 +332,7 @@ function playerCollidesEnemy() {
 
     invincabilityFrames = true;
 
-    // this starts a timer that counts up too 2000 milliseconds
+    // this starts a timer that counts up too 1000 milliseconds
     // before terminating and updating the invincabilityFrames variable to false.
     setTimeout(() => {
         invincabilityFrames = false;
@@ -326,14 +346,25 @@ function playerCollidesEnemy() {
 /*******************************************************/
 function roundOver() {
     roundPlay = false;
+    roundEnd = true;
     console.log("round is Over");
 
-    while (!roundPlay) {
+    //freeze the clock
+    clockIsOn = false;
+
+    //calculate final score
+    finalScore = clockTime;
+    console.log("Final score: " + clockTime);
+
+
+    //repeats 5 times once the player died to make sure absolutley no objects are still moving
+    for (t = 0; t < 5; t++) {
         enemyGroup.vel.x = 0;
         enemyGroup.vel.y = 0;
         player.vel.x = 0;
         player.vel.y = 0;
     }
+
 }
 
 
