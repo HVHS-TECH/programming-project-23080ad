@@ -175,6 +175,9 @@ function draw() {
         //stop the player from bouncing off rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
+        
+
+        //PAUSE
 
         //toggles and untoggles the world time scale which freezes time on the physics simulation
         if (kb.presses('p')) {
@@ -183,7 +186,6 @@ function draw() {
             clockIsOn = !clockIsOn;
 
         }
-
 
         //when  pause is activated, instantPause sets itself to the current clock time. 
         //Next a second timer starts which sets clockPause's value to however long the round has been running
@@ -465,7 +467,8 @@ function roundOver() {
 
 //create a rock
 function createRock() {
-    let rock = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), random(0, windowHeight), 50, 'k');
+    // x position modifiers to stop rocks from generating behind or overlapping sidebar; needs a better fix.
+    let rock = new Sprite(random(0, (windowWidth - sideBarWidth - 50) - 5), random(0, windowHeight), 50, 'k');
     rock.mass = 0.1;
     rockNumber = rockNumber + 1;
     rock.name = "rock " + rockNumber;
