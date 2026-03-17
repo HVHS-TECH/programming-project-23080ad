@@ -48,6 +48,7 @@ var rockNumber = -1;
 
 //score variables
 var finalScore = 0;
+var highScore = 0;
 
 
 /*******************************************************/
@@ -64,15 +65,16 @@ function setup() {
     //draw the canvas
     cnv = new Canvas(windowWidth, windowHeight);
     
+    resizeCanvas(windowWidth, windowHeight);
+
     //create the ENEMY and ROCK sprite groups
     enemyGroup = new Group();
     rockGroup = new Group();
 
-    //create rocks for the background
+    //create rocks for the main screen background
     for (rocks = 0; rocks < 15; rocks++) {
         createRock();
     }
-
 
     //create the world borders L, R, U, D.
     BorderL = new Sprite(0, windowHeight/2, 1, windowHeight, 's');
@@ -169,7 +171,13 @@ function draw() {
         fill('black');
         textAlign(CENTER);
         textSize(100);
-        text("FINAL SCORE: " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+        text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+    }
+    if (roundEnd) {
+        fill('black');
+        textAlign(CENTER);
+        textSize(50);
+        text("HIGH SCORE " + highScore , windowWidth / 2, (windowHeight / 2) + 100);
     }
 
 }
@@ -383,6 +391,9 @@ function roundOver() {
 
     //calculate final score
     finalScore = clockTime;
+    if (finalScore > highScore){
+        highScore = finalScore;
+    }
     console.log("Final score: " + clockTime);
 
 
