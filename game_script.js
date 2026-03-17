@@ -34,7 +34,7 @@ var playerScale = 40;
 
 //player gets damaged variables
 let invincabilityFrames = false;
-var playerHealth = 5;
+var playerHealth = 0;
 
 //ENEMIES
 
@@ -56,27 +56,34 @@ var finalScore = 0;
 function setup() {
     console.log("setup: ");
 
+    //GAME SETUP
+
     //set game speed
     frameRate(gameSpeed);
-
+    
     //draw the canvas
     cnv = new Canvas(windowWidth, windowHeight);
+    
+    //create the ENEMY and ROCK sprite groups
+    enemyGroup = new Group();
+    rockGroup = new Group();
+
+    //create rocks for the background
+    for (rocks = 0; rocks < 15; rocks++) {
+        createRock();
+    }
+
+
+    //create the world borders L, R, U, D.
+    BorderL = new Sprite(0, windowHeight/2, 1, windowHeight, 's');
+    BorderR = new Sprite(windowWidth, windowHeight/2, 1, windowHeight, 's');
+    BorderU = new Sprite(windowWidth/2, windowHeight, windowWidth, 1, 's');
+    BorderD = new Sprite(windowWidth/2, 0, windowWidth, 1, 's');
 
     //create the player charcter
     player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
     player.rotationLock = 1;
     player.layer = 1;
-
-    //test = new Sprite(windowWidth / 4, windowHeight / 2, playerScale, playerScale);
-
-    //create the various sprite groups testtest
-    enemyGroup = new Group();
-    rockGroup = new Group();
-
-    //create afew rocks on game start
-    for (rocks = 0; rocks < 15; rocks++) {
-        createRock();
-    }
 
     //create the hollow purple
     hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
@@ -89,7 +96,7 @@ function setup() {
     start_backdrop.opacity = 0.5;
 
     //Create a button which starts a new round when pressed
-    newRoundButton = createButton('Start Game');
+    newRoundButton = createButton('New Round');
     newRoundButton.size(100, 50);
     newRoundButton.position(windowWidth / 2 - buttonX / 2, windowHeight / 1.5);
     newRoundButton.mousePressed(startRound);
@@ -106,6 +113,7 @@ function draw() {
     //draws all sprites first so that the text object can then be drawn infront of them
     allSprites.draw();
 
+    
     //CLOCK
 
     //if clockIsOn is true, the game will calculate the rounded value of how many milliseconds
@@ -120,49 +128,47 @@ function draw() {
         fill('white');
         textSize(100);
         textAlign(CENTER);
-        text("Test title", windowWidth / 2, windowHeight / 2);
+        text("SURVIVOR", windowWidth / 2, windowHeight / 2);
     }
-    
-    
-    
+
     //when the start button is pressed the main game functions which are supposed to trigger on each iteration of the darw loop activate. once the round ends these effects stop triggering until a new starts where on every value should be reset
     if (roundPlay) {
-        
+
         // Display the clock on screen
         fill('white');
         textAlign(CENTER);
         textSize(32);
         text("Time: " + clockTime, width / 2, height / 4);
-        
+
         // display the players health on screen
         fill('red');
         textAlign(RIGHT);
         textSize(32);
         text("Health: " + playerHealth, width - 100, height / 10);
-        
+
         //direct the Hollow Purple
         //hollow_purple.moveTo(mouse, 10);
-        
+
         //ENEMY SPAWNING
         enemySpawning();
-        
+
         //PLAYER MOVEMENT
         playerMovement();
-        
+
         //PLAYER, OBSTACLE & ENEMY INTERACTION
-        
+
         //stop the player from bouncing off rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
     }
-    
+
     //ROUND OVER triggers
 
     //displays final score
     if (roundEnd) {
-        fill('white');
+        fill('black');
         textAlign(CENTER);
-        textSize(32);
+        textSize(100);
         text("FINAL SCORE: " + finalScore + "!", windowWidth / 2, windowHeight / 2);
     }
 
@@ -172,17 +178,40 @@ function draw() {
 // startRound()
 /*******************************************************/
 
-//triggers all events that need to happen when a new round is started
+//triggers all events that need to happen when a new round is started.
+//Acts as a start button and a restart button so it must also reset all events from teh round over state.
 function startRound() {
-    //reseting and starting the clock
-    clockStartTime = millis();
-    clockIsOn = true;
+    
+    //switches game state to roundPlay and disables all other potential agme states
     roundPlay = true;
+    roundEnd = false;
+    
 
-    //hiding elemnets from the start screen
+    //removing all enemies from enemyGroup and deleting them
+    enemyGroup.removeAll();
+    rockGroup.removeAll();
+
+    //resset player stats & send them to their start location
+    playerHealth = 5;
+    
+    player.x = windowWidth/2;
+    player.y = windowHeight/2;
+    
+    //create the background rocks
+    for (rocks = 0; rocks < random(15, 20); rocks++) {
+        createRock();
+    }
+
+    //hiding elemnets from/setting up the start screen
     start_backdrop.visible = false;
     newRoundButton.hide();
     showTitle = false;
+
+    //reseting and starting the clock
+    clockStartTime = millis();
+    clockIsOn = true;
+
+
 }
 
 
@@ -364,6 +393,7 @@ function roundOver() {
         player.vel.x = 0;
         player.vel.y = 0;
     }
+    newRoundButton.show();
 
 }
 
@@ -371,7 +401,6 @@ function roundOver() {
 /*******************************************************/
 // createRock()
 /*******************************************************/
-
 
 //create a rock
 function createRock() {
