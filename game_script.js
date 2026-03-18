@@ -86,14 +86,16 @@ function setup() {
 
     //create the world borders L, R, U, D.
     BorderL = new Sprite(0, windowHeight / 2, 1, windowHeight, 's');
+    //this is all so border R isnt hidden behind the sidebar or showing on the start screen
     BorderR = new Sprite(windowWidth - sideBarWidth, windowHeight / 2, 1, windowHeight, 's');
+    BorderR.visible = false;
     BorderU = new Sprite(windowWidth / 2, windowHeight, windowWidth, 1, 's');
     BorderD = new Sprite(windowWidth / 2, 0, windowWidth, 1, 's');
 
     //create the side bar
     Side_Bar = new Sprite(windowWidth - sideBarWidth / 2, windowHeight / 2, sideBarWidth, windowHeight, 'n');
     Side_Bar.color = 'tan';
-
+    Side_Bar.visible = false;
 
     //create the player charcter
     player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
@@ -127,16 +129,6 @@ function draw() {
 
     //draws all sprites first so that the text object can then be drawn infront of them
     allSprites.draw();
-
-
-    //CLOCK
-
-    //if clockIsOn is true, the game will calculate the rounded value of how many milliseconds
-    //the game has been running for minus how long the game has been running for before the clock was started,
-    //divided by 1000 to calculate how many seconds its been running for.
-    if (clockIsOn) {
-        clockTime = floor(((millis() - clockStartTime) / 1000) - clockPause );
-    }
 
     //draw the Title
     if (showTitle) {
@@ -175,58 +167,30 @@ function draw() {
         //stop the player from bouncing off rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
-        
 
         //PAUSE
+        gamePause();
 
-        //toggles and untoggles the world time scale which freezes time on the physics simulation
-        if (kb.presses('p')) {
-            world.timeScale = !world.timeScale;
-            pauseRun = !pauseRun;
-            clockIsOn = !clockIsOn;
+        //ROUND OVER triggers
 
+        //displays final score
+        if (roundEnd) {
+            fill('black');
+            textAlign(CENTER);
+            textSize(100);
+            text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
         }
 
-        //when  pause is activated, instantPause sets itself to the current clock time. 
-        //Next a second timer starts which sets clockPause's value to however long the round has been running
-        //minus this instant pause to calculate how long the round has been runnig after the pause.
-        //Finally this value is constantly being removed from the clockTime variable in timer
-        //meaning that the time is allways in the right place when it restarts having accounted for any and all pauses.
-        if (pauseRun) {
-            if (instantPause < 1) {
-                instantPause = clockTime;
-                console.log("instant pause time: " + instantPause);
-            }
-            clockPause = floor(((millis() - clockStartTime) / 1000) - instantPause);
-            console.log("clock pause: " + clockPause);
-        }
-        //when the game becomes unpaused this resets instantPause so it can be reset in the above if stament when "instantPause < 1"
-        if (!pauseRun){
-             instantPause = 0;
+        //displays high score
+        if (roundEnd) {
+            fill('black');
+            textAlign(CENTER);
+            textSize(50);
+            text("HIGH SCORE " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
         }
 
     }
-
-    //ROUND OVER triggers
-
-    //displays final score
-    if (roundEnd) {
-        fill('black');
-        textAlign(CENTER);
-        textSize(100);
-        text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
-    }
-
-    //displays high score
-    if (roundEnd) {
-        fill('black');
-        textAlign(CENTER);
-        textSize(50);
-        text("HIGH SCORE " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
-    }
-
 }
-
 /*******************************************************/
 // startRound()
 /*******************************************************/
@@ -257,6 +221,8 @@ function startRound() {
 
     //hiding elemnets from/setting up the start screen
     start_backdrop.visible = false;
+    Side_Bar.visible = true;
+    BorderR.visible = true;
     newRoundButton.hide();
     showTitle = false;
 
@@ -386,6 +352,51 @@ function playerMovement() {
         player.vel.y = 0;
     }
 
+}
+
+
+/*******************************************************/
+// gamePause() & clock control
+/*******************************************************/
+function gamePause() {
+
+    //CLOCK
+
+    //if clockIsOn is true, the game will calculate the rounded value of how many milliseconds
+    //the game has been running for minus how long the game has been running for before the clock was started,
+    //divided by 1000 to calculate how many seconds its been running for.
+    if (clockIsOn) {
+        clockTime = floor(((millis() - clockStartTime) / 1000) - clockPause);
+    }
+
+    //only runs the game pause code while a round is active cause there is no reason to pause outside of a round
+    if (roundPlay) {
+        //toggles and untoggles the world time scale which freezes time on the physics simulation
+        if (kb.presses('p')) {
+            world.timeScale = !world.timeScale;
+            pauseRun = !pauseRun;
+            clockIsOn = !clockIsOn;
+
+        }
+
+        //when  pause is activated, instantPause sets itself to the current clock time. 
+        //Next a second timer starts which sets clockPause's value to however long the round has been running
+        //minus this instant pause to calculate how long the round has been runnig after the pause.
+        //Finally this value is constantly being removed from the clockTime variable in timer
+        //meaning that the time is allways in the right place when it restarts having accounted for any and all pauses.
+        if (pauseRun) {
+            if (instantPause < 1) {
+                instantPause = clockTime;
+                console.log("instant pause time: " + instantPause);
+            }
+            clockPause = floor(((millis() - clockStartTime) / 1000) - instantPause);
+            console.log("clock pause: " + clockPause);
+        }
+        //when the game becomes unpaused this resets instantPause so it can be reset in the above if stament when "instantPause < 1"
+        if (!pauseRun) {
+            instantPause = 0;
+        }
+    }
 }
 
 
