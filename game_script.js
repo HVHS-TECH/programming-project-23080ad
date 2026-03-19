@@ -84,6 +84,7 @@ function setup() {
         createRock();
     }
 
+
     //create the world borders L, R, U, D.
     BorderL = new Sprite(0, windowHeight / 2, 1, windowHeight, 's');
     //this is all so border R isnt hidden behind the sidebar or showing on the start screen
@@ -96,6 +97,7 @@ function setup() {
     Side_Bar = new Sprite(windowWidth - sideBarWidth / 2, windowHeight / 2, sideBarWidth, windowHeight, 'n');
     Side_Bar.color = 'tan';
     Side_Bar.visible = false;
+
 
     //create the player charcter
     player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
@@ -118,13 +120,16 @@ function setup() {
     newRoundButton.position(windowWidth / 2 - buttonX / 2, windowHeight / 1.5);
     newRoundButton.mousePressed(startRound);
 
-    //create the final score sprite
-    final_score = new Sprite(windowWidth /2, windowHeight /2, 50, 50, 'n');
-    final_score.text = ('FINAL SCORE ' + finalScore + '!', windowWidth / 2, windowHeight / 2);
-    final_score.textColor = 'black';
-    //final_score.textAlign(CENTER);
-    final_score.textSize = 100;
-    final_score.visible = false;
+    //create the pause screen
+    //note that this is created nearly last so it appears as an overlay to everything else
+    pause_indicator = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n');
+    pause_indicator.color = 'black';
+    pause_indicator.opacity = 0.5;
+    pause_indicator.visible = false;
+
+    //the text segment of the pause indicator (is drawn over the physical segment).
+    pause_indicator.text = 'Paused';
+    pause_indicator.textSize = 100;
 }
 
 /*******************************************************/
@@ -181,25 +186,24 @@ function draw() {
 
         //ROUND OVER triggers
 
-        //displays final score
-        // if (roundEnd) {
-        //     console.log("final score test");
-        //     fill('black');
-        //     textAlign(CENTER);
-        //     textSize(100);
-        //     text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
-        // }
-
-        //displays high score
-        if (roundEnd) {
-            console.log("fella");
-            fill('black');
-            textAlign(CENTER);
-            textSize(50);
-            text("HIGH SCORE " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
-        }
 
     }
+    //displays final score
+    if (roundEnd) {
+        fill('black');
+        textAlign(CENTER);
+        textSize(100);
+        text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+    }
+
+    //displays high score
+    if (roundEnd) {
+        fill('black');
+        textAlign(CENTER);
+        textSize(50);
+        text("HIGH SCORE " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
+    }
+
 }
 /*******************************************************/
 // startRound()
@@ -233,8 +237,9 @@ function startRound() {
     start_backdrop.visible = false;
     Side_Bar.visible = true;
     BorderR.visible = true;
-    newRoundButton.hide();
     showTitle = false;
+    pause_indicator.visible = false;
+    newRoundButton.hide();
 
     //reseting and starting the clock
     clockStartTime = millis();
@@ -316,9 +321,9 @@ function enemySpawning() {
                 enemyGroup.add(enemy);
                 spawnCounter = 0;
             }
-            console.log(enemyGroup);
-            console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
-            console.log("Enemy Number " + enemyNumber);
+            // console.log(enemyGroup);
+            // console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
+            // console.log("Enemy Number " + enemyNumber);
         }
     }
 }
@@ -387,6 +392,13 @@ function gamePause() {
         pauseRun = !pauseRun;
         clockIsOn = !clockIsOn;
 
+    }
+
+    //shows the pause screen while pauseRun is active
+    if (pauseRun) {
+        pause_indicator.visible = true
+    } else if (!pauseRun) {
+        pause_indicator.visible = false;
     }
 
     //when  pause is activated, instantPause sets itself to the current clock time. 
@@ -464,11 +476,10 @@ function roundOver() {
 
     //calculate final score
     finalScore = clockTime;
-    final_score.visible = true;
     if (finalScore > highScore) {
         highScore = finalScore;
     }
-    console.log("Final score: " + clockTime);
+    console.log("Final score: " + finalScore);
 
 
     //repeats 5 times once the player died to make sure absolutley no objects are still moving
