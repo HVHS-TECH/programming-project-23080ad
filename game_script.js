@@ -117,6 +117,14 @@ function setup() {
     newRoundButton.size(100, 50);
     newRoundButton.position(windowWidth / 2 - buttonX / 2, windowHeight / 1.5);
     newRoundButton.mousePressed(startRound);
+
+    //create the final score sprite
+    final_score = new Sprite(windowWidth /2, windowHeight /2, 50, 50, 'n');
+    final_score.text = ('FINAL SCORE ' + finalScore + '!', windowWidth / 2, windowHeight / 2);
+    final_score.textColor = 'black';
+    //final_score.textAlign(CENTER);
+    final_score.textSize = 100;
+    final_score.visible = false;
 }
 
 /*******************************************************/
@@ -174,15 +182,17 @@ function draw() {
         //ROUND OVER triggers
 
         //displays final score
-        if (roundEnd) {
-            fill('black');
-            textAlign(CENTER);
-            textSize(100);
-            text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
-        }
+        // if (roundEnd) {
+        //     console.log("final score test");
+        //     fill('black');
+        //     textAlign(CENTER);
+        //     textSize(100);
+        //     text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+        // }
 
         //displays high score
         if (roundEnd) {
+            console.log("fella");
             fill('black');
             textAlign(CENTER);
             textSize(50);
@@ -370,33 +380,33 @@ function gamePause() {
     }
 
     //only runs the game pause code while a round is active cause there is no reason to pause outside of a round
-    if (roundPlay) {
-        //toggles and untoggles the world time scale which freezes time on the physics simulation
-        if (kb.presses('p')) {
-            world.timeScale = !world.timeScale;
-            pauseRun = !pauseRun;
-            clockIsOn = !clockIsOn;
 
-        }
+    //toggles and untoggles the world time scale which freezes time on the physics simulation
+    if (kb.presses('p')) {
+        world.timeScale = !world.timeScale;
+        pauseRun = !pauseRun;
+        clockIsOn = !clockIsOn;
 
-        //when  pause is activated, instantPause sets itself to the current clock time. 
-        //Next a second timer starts which sets clockPause's value to however long the round has been running
-        //minus this instant pause to calculate how long the round has been runnig after the pause.
-        //Finally this value is constantly being removed from the clockTime variable in timer
-        //meaning that the time is allways in the right place when it restarts having accounted for any and all pauses.
-        if (pauseRun) {
-            if (instantPause < 1) {
-                instantPause = clockTime;
-                console.log("instant pause time: " + instantPause);
-            }
-            clockPause = floor(((millis() - clockStartTime) / 1000) - instantPause);
-            console.log("clock pause: " + clockPause);
-        }
-        //when the game becomes unpaused this resets instantPause so it can be reset in the above if stament when "instantPause < 1"
-        if (!pauseRun) {
-            instantPause = 0;
-        }
     }
+
+    //when  pause is activated, instantPause sets itself to the current clock time. 
+    //Next a second timer starts which sets clockPause's value to however long the round has been running
+    //minus this instant pause to calculate how long the round has been runnig after the pause.
+    //Finally this value is constantly being removed from the clockTime variable in timer
+    //meaning that the time is allways in the right place when it restarts having accounted for any and all pauses.
+    if (pauseRun) {
+        if (instantPause < 1) {
+            instantPause = clockTime;
+            console.log("instant pause time: " + instantPause);
+        }
+        clockPause = floor(((millis() - clockStartTime) / 1000) - instantPause);
+        console.log("clock pause: " + clockPause);
+    }
+    //when the game becomes unpaused this resets instantPause so it can be reset in the above if stament when "instantPause < 1"
+    if (!pauseRun) {
+        instantPause = 0;
+    }
+
 }
 
 
@@ -427,7 +437,7 @@ function playerCollidesEnemy() {
     playerHealth--;
     console.log("player health: " + playerHealth);
     if (playerHealth < 1) {
-        roundOver()
+        roundOver();
     }
 
     invincabilityFrames = true;
@@ -454,6 +464,7 @@ function roundOver() {
 
     //calculate final score
     finalScore = clockTime;
+    final_score.visible = true;
     if (finalScore > highScore) {
         highScore = finalScore;
     }
