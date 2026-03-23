@@ -189,19 +189,25 @@ function draw() {
 
     }
     //displays final score
+
     if (roundEnd) {
-        fill('black');
+        stroke(1);
+        strokeWeight(4); fill('white');
         textAlign(CENTER);
         textSize(100);
         text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+        strokeWeight(1);
     }
 
     //displays high score
     if (roundEnd) {
-        fill('black');
+        stroke(1);
+        strokeWeight(4);
+        fill('white');
         textAlign(CENTER);
         textSize(50);
         text("HIGH SCORE " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
+        strokeWeight(1);
     }
 
 }
@@ -244,8 +250,6 @@ function startRound() {
     //reseting and starting the clock
     clockStartTime = millis();
     clockIsOn = true;
-
-
 }
 
 
@@ -505,6 +509,7 @@ function createRock() {
     rock.mass = 0.1;
     rockNumber = rockNumber + 1;
     rock.name = "rock " + rockNumber;
+    rock.color = 'darkgrey';
     //for (let i = 0; i < rockGroup.length; i++) {
     //let rockA = rockGroup[i];
     //console.log("check 1");
