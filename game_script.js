@@ -120,9 +120,15 @@ function setup() {
     newRoundButton.position(windowWidth / 2 - buttonX / 2, windowHeight / 1.5);
     newRoundButton.mousePressed(startRound);
 
+    //create abutton which displays the controls when pressed
+    gameControls = createButton('Controls');
+    gameControls.size(100, 50);
+    gameControls.position((windowWidth - buttonX) / 2, windowHeight / 2);
+    gameControls.mousePressed(displayControls);
+
     //create the pause screen
     //note that this is created nearly last so it appears as an overlay to everything else
-    pause_indicator = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n');
+    pause_indicator = new Sprite(windowWidth / 2, windowHeight / 1.75, windowWidth, windowHeight, 'n');
     pause_indicator.color = 'black';
     pause_indicator.opacity = 0.5;
     pause_indicator.visible = false;
@@ -130,6 +136,13 @@ function setup() {
     //the text segment of the pause indicator (is drawn over the physical segment).
     pause_indicator.text = 'Paused';
     pause_indicator.textSize = 100;
+
+    //create the Game Controls display
+    game_Controls = new Sprite(windowWidth / 2, windowHeight / 2, 300, 300, 'n');
+    game_Controls.text = 'test';
+    game_Controls.textSize = 100;
+    game_Controls.visible = false;
+
 }
 
 /*******************************************************/
@@ -155,12 +168,14 @@ function draw() {
     if (roundPlay) {
 
         // Display the clock on screen
+        strokeWeight(1);
         fill('black');
         textAlign(CENTER);
         textSize(32);
         text("Time: " + clockTime, (windowWidth - (sideBarWidth / 2)), height / 4);
 
         // display the players health on screen
+        strokeWeight(1);
         fill('black');
         textAlign(CENTER);
         textSize(32);
@@ -252,6 +267,12 @@ function startRound() {
     clockIsOn = true;
 }
 
+/*******************************************************/
+// displayControls()
+/*******************************************************/
+function displayControls() {
+    game_Controls.visible = !game_Controls.visible;
+}
 
 /*******************************************************/
 // enemySpawning()
@@ -292,6 +313,8 @@ function enemySpawning() {
             //set enemy spawn coordinates
 
             //spawns an enemy from the left edge  of screen
+
+            //add gebnric details to a encompasing if statement
             if (enemySpawnPositioning == 1) {
                 enemyNumber = enemyNumber + 1;
                 enemy = new Sprite(0, random(0, windowHeight), 20, 20);
@@ -325,9 +348,9 @@ function enemySpawning() {
                 enemyGroup.add(enemy);
                 spawnCounter = 0;
             }
-            // console.log(enemyGroup);
-            // console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
-            // console.log("Enemy Number " + enemyNumber);
+            console.log(enemyGroup);
+            console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
+            console.log("Enemy Number " + enemyNumber);
         }
     }
 }
