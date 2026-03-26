@@ -50,6 +50,10 @@ var enemySpawnPositioning = 0;
 var enemyNumber = 0;
 var spawnCounter = 0;
 
+var enemyScale = 0;
+var enemyColor = 0;
+var enemySpeed = 0;
+
 //rock spawning variables
 var rockNumber = -1;
 
@@ -100,7 +104,7 @@ function setup() {
 
 
     //create the player charcter
-    player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, playerScale, 'd');
+    player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, 'd');
     player.rotationLock = 1;
     player.layer = 1;
 
@@ -132,7 +136,7 @@ function setup() {
     game_Controls.textSize = 20;
     game_Controls.visible = false;
     game_Controls.color = 'tan';
-    
+
     //create the pause screen
     //note that this is created nearly last so it appears as an overlay to everything else
     pause_indicator = new Sprite(windowWidth / 2, windowHeight / 1.75, windowWidth, windowHeight, 'n');
@@ -231,7 +235,7 @@ function draw() {
 /*******************************************************/
 
 //triggers all events that need to happen when a new round is started.
-//Acts as a start button and a restart button so it must also reset all events from teh round over state.
+//Acts as a start button and a restart button so it must also reset all events from the "round over" state.
 function startRound() {
 
     //switches game state to roundPlay and disables all other potential agme states
@@ -273,16 +277,16 @@ function startRound() {
 /*******************************************************/
 function displayControls() {
     game_Controls.visible = !game_Controls.visible;
-    
+
     //hide the title and new round buttons while this menu is open, reveal them when it closes
     showTitle = !showTitle;
     //Ties the new round buttons visibility to that of the title to save me from creating another variable
-    if (showTitle == true){
+    if (showTitle == true) {
         newRoundButton.show();
-    } else if (showTitle == false){
+    } else if (showTitle == false) {
         newRoundButton.hide();
     }
-    
+
 }
 
 /*******************************************************/
@@ -297,7 +301,7 @@ function enemySpawning() {
         for (let enemy of enemyGroup) {
             // Use rotateTo to instantly face the target
             enemy.rotateTowards(player, 0.05);
-            enemy.moveTo(player, 1)
+            enemy.moveTo(player, enemySpeed);
         }
 
         //choose which side of the screen enemies spawn from
@@ -326,39 +330,44 @@ function enemySpawning() {
             //spawns an enemy from the left edge  of screen
 
             //add gebnric details to a encompasing if statement
+            enemyScale = floor(random(20, 61));
             if (enemySpawnPositioning == 1) {
                 enemyNumber = enemyNumber + 1;
-                enemy = new Sprite(0, random(0, windowHeight), 20, 20);
+                enemy = new Sprite(0, random(0, windowHeight), enemyScale, enemyScale);
 
-                enemyGroup.add(enemy);
-                spawnCounter = 0;
             }
+
             //spawns an enemy from the right edge  of screen
             else if (enemySpawnPositioning == 2) {
                 enemyNumber = enemyNumber + 1;
                 //this is so enemies dont spawn behind or in the sidebar
                 //which is why we have both the minus side bar width and the minus 5 for thoss reasons in that order.
-                enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), 20, 20);
+                enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale, enemyScale);
 
-                enemyGroup.add(enemy);
-                spawnCounter = 0;
             }
+
             //spawns an enemy from the top edge  of screen
             else if (enemySpawnPositioning == 3) {
                 enemyNumber = enemyNumber + 1;
-                enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, 20, 20);
+                enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
 
-                enemyGroup.add(enemy);
-                spawnCounter = 0;
             }
+
             //spawns an enemy from the bottom edge of screen
             else if (enemySpawnPositioning == 4) {
                 enemyNumber = enemyNumber + 1;
-                enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight, 20, 20);
-
-                enemyGroup.add(enemy);
-                spawnCounter = 0;
+                enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
             }
+
+            //adds the newly spawned enemy to the enemy group
+            enemyGroup.add(enemy);
+            //only makes grey shades for some reason
+            enemyColor = floor(random(1, 255))
+            enemy.color = enemyColor;
+            spawnCounter = 0;
+            console.log(enemyColor);
+            enemySpeed = enemyColor;
+
             console.log(enemyGroup);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
             console.log("Enemy Number " + enemyNumber);
