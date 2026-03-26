@@ -123,9 +123,16 @@ function setup() {
     //create abutton which displays the controls when pressed
     gameControls = createButton('Controls');
     gameControls.size(100, 50);
-    gameControls.position((windowWidth - buttonX) / 2, windowHeight / 2);
+    gameControls.position((windowWidth - buttonX) / 2, windowHeight / 1.30);
     gameControls.mousePressed(displayControls);
 
+    //create the Game Controls display
+    game_Controls = new Sprite(windowWidth / 2, windowHeight / 2, 600, 300, 'n');
+    game_Controls.text = "MOVEMENT: \n Arrow keys \n\n GOAL: \n Avoid enemies and survive for as long as you can";
+    game_Controls.textSize = 20;
+    game_Controls.visible = false;
+    game_Controls.color = 'tan';
+    
     //create the pause screen
     //note that this is created nearly last so it appears as an overlay to everything else
     pause_indicator = new Sprite(windowWidth / 2, windowHeight / 1.75, windowWidth, windowHeight, 'n');
@@ -136,13 +143,6 @@ function setup() {
     //the text segment of the pause indicator (is drawn over the physical segment).
     pause_indicator.text = 'Paused';
     pause_indicator.textSize = 100;
-
-    //create the Game Controls display
-    game_Controls = new Sprite(windowWidth / 2, windowHeight / 2, 300, 300, 'n');
-    game_Controls.text = 'test';
-    game_Controls.textSize = 100;
-    game_Controls.visible = false;
-
 }
 
 /*******************************************************/
@@ -261,6 +261,7 @@ function startRound() {
     showTitle = false;
     pause_indicator.visible = false;
     newRoundButton.hide();
+    gameControls.hide();
 
     //reseting and starting the clock
     clockStartTime = millis();
@@ -272,6 +273,16 @@ function startRound() {
 /*******************************************************/
 function displayControls() {
     game_Controls.visible = !game_Controls.visible;
+    
+    //hide the title and new round buttons while this menu is open, reveal them when it closes
+    showTitle = !showTitle;
+    //Ties the new round buttons visibility to that of the title to save me from creating another variable
+    if (showTitle == true){
+        newRoundButton.show();
+    } else if (showTitle == false){
+        newRoundButton.hide();
+    }
+    
 }
 
 /*******************************************************/
