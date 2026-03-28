@@ -43,6 +43,9 @@ var playerScale = 40;
 let invincabilityFrames = false;
 var playerHealth = 0;
 
+//Fired bullet
+var fireBullet = false;
+
 //ENEMIES
 
 //Enemy spawning variables
@@ -88,7 +91,6 @@ function setup() {
         createRock();
     }
 
-
     //create the world borders L, R, U, D.
     BorderL = new Sprite(0, windowHeight / 2, 1, windowHeight, 's');
     //this is all so border R isnt hidden behind the sidebar or showing on the start screen
@@ -96,17 +98,27 @@ function setup() {
     BorderR.visible = false;
     BorderU = new Sprite(windowWidth / 2, windowHeight, windowWidth, 1, 's');
     BorderD = new Sprite(windowWidth / 2, 0, windowWidth, 1, 's');
+    
+    borderGroup = new Group();
+    borderGroup.add (BorderL);
+    borderGroup.add (BorderR);
+    borderGroup.add (BorderU);
+    borderGroup.add (BorderD);
 
     //create the side bar
     Side_Bar = new Sprite(windowWidth - sideBarWidth / 2, windowHeight / 2, sideBarWidth, windowHeight, 'n');
     Side_Bar.color = 'tan';
     Side_Bar.visible = false;
 
-
     //create the player charcter
     player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, 'd');
     player.rotationLock = 1;
     player.layer = 1;
+
+    //create the fired bullet
+    bullet = new Sprite(windowWidth / 2, windowHeight / 2, 20, 30, 'd');
+    bullet.rotationLock = 1;
+
 
     //create the hollow purple
     hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
@@ -188,6 +200,24 @@ function draw() {
         //direct the Hollow Purple
         //hollow_purple.moveTo(mouse, 10);
 
+        //make the bullet go to the player until shot
+        if (kb.pressing('Space') && fireBullet == false) {
+            fireBullet = true;
+            bullet.visible = true;
+            mouse.x = targetX;
+            mouse.y = targetY;
+            bullet.moveTowards (mouse, 1);
+        }
+        if (fireBullet == false) {
+            bullet.x = player.x - playerScale;
+            bullet.y = player.y - playerScale;
+        }
+        bullet.collides(rockGroup, bulletCollidesSolid);
+        bullet.collides(borderGroup, bulletCollidesSolid);
+        bullet.collides(enemyGroup, killenemy);
+        bullet.rotateTowards (mouse, 0.1);
+
+
         //ENEMY SPAWNING
         enemySpawning();
 
@@ -198,6 +228,7 @@ function draw() {
 
         //stop the player from bouncing off rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
+        bullet.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
 
         //PAUSE
@@ -366,7 +397,8 @@ function enemySpawning() {
             enemy.color = enemyColor;
             spawnCounter = 0;
             console.log(enemyColor);
-            enemySpeed = enemyColor;
+            enemySpeed = 1;
+            
 
             console.log(enemyGroup);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
@@ -375,7 +407,10 @@ function enemySpawning() {
     }
 }
 
-
+function killenemy(_bullet, _ssss) {
+    _ssss.remove();
+    bulletCollidesSolid();
+}
 /*******************************************************/
 // playerMovement()
 /*******************************************************/
@@ -477,6 +512,15 @@ function gamePause() {
 function playerCollidesSolid() {
     player.vel.x = 0;
     player.vel.y = 0;
+}
+
+
+
+/*******************************************************/
+// bulletCollidesSolid()
+/*******************************************************/
+function bulletCollidesSolid() {
+    fireBullet = false;
 }
 
 
