@@ -43,9 +43,6 @@ var playerScale = 40;
 let invincabilityFrames = false;
 var playerHealth = 0;
 
-//Fired bullet
-var fireBullet = false;
-
 //ENEMIES
 
 //Enemy spawning variables
@@ -98,12 +95,12 @@ function setup() {
     BorderR.visible = false;
     BorderU = new Sprite(windowWidth / 2, windowHeight, windowWidth, 1, 's');
     BorderD = new Sprite(windowWidth / 2, 0, windowWidth, 1, 's');
-    
+
     borderGroup = new Group();
-    borderGroup.add (BorderL);
-    borderGroup.add (BorderR);
-    borderGroup.add (BorderU);
-    borderGroup.add (BorderD);
+    borderGroup.add(BorderL);
+    borderGroup.add(BorderR);
+    borderGroup.add(BorderU);
+    borderGroup.add(BorderD);
 
     //create the side bar
     Side_Bar = new Sprite(windowWidth - sideBarWidth / 2, windowHeight / 2, sideBarWidth, windowHeight, 'n');
@@ -116,8 +113,11 @@ function setup() {
     player.layer = 1;
 
     //create the fired bullet
-    bullet = new Sprite(windowWidth / 2, windowHeight / 2, 20, 30, 'd');
-    bullet.rotationLock = 1;
+    // bullet = new Sprite(windowWidth / 2, windowHeight / 2, 20, 30, 'd');
+    // bullet.rotationLock = 1;
+
+    bulletGroup = new Group();
+    bulletGroup.collider = 'Dynamic';
 
 
     //create the hollow purple
@@ -201,21 +201,26 @@ function draw() {
         //hollow_purple.moveTo(mouse, 10);
 
         //make the bullet go to the player until shot
-        if (kb.pressing('Space') && fireBullet == false) {
-            fireBullet = true;
-            bullet.visible = true;
-            mouse.x = targetX;
-            mouse.y = targetY;
-            bullet.moveTowards (mouse, 1);
+        if (kb.pressed('Space')) {
+            bulletGroup.visible = true;
+            bulletGroup.rotationLock = 1;
+            // mouse.x = targetX;
+            // mouse.y = targetY;
+
+            bullet = new Sprite(windowWidth / 2, windowHeight / 2, 20, 'd');
+            bulletGroup.add(bullet);
+            bulletGroup.moveTowards(mouse);
         }
-        if (fireBullet == false) {
-            bullet.x = player.x - playerScale;
-            bullet.y = player.y - playerScale;
-        }
-        bullet.collides(rockGroup, bulletCollidesSolid);
-        bullet.collides(borderGroup, bulletCollidesSolid);
-        bullet.collides(enemyGroup, killenemy);
-        bullet.rotateTowards (mouse, 0.1);
+
+        // if (fireBullet == false) {
+        //     bullet.x = player.x - playerScale;
+        //     bullet.y = player.y - playerScale;
+        // }
+
+        //rockGroup.collides(bulletGroup, bulletCollidesSolid);
+        borderGroup.collides(bulletGroup, bulletCollidesSolid);
+        enemyGroup.collides(bulletGroup, killenemy);
+        //bulletGroup.rotateTowards(mouse, 0.1);
 
 
         //ENEMY SPAWNING
@@ -226,9 +231,9 @@ function draw() {
 
         //PLAYER, OBSTACLE & ENEMY INTERACTION
 
-        //stop the player from bouncing off rocks and enemies
+        //stop the player from bouncing off bullets, rocks and enemies
         rockGroup.collided(player, playerCollidesSolid);
-        bullet.collided(player, playerCollidesSolid);
+        bulletGroup.collided(player, playerCollidesSolid);
         enemyGroup.collided(player, playerCollidesEnemy);
 
         //PAUSE
@@ -398,7 +403,7 @@ function enemySpawning() {
             spawnCounter = 0;
             console.log(enemyColor);
             enemySpeed = 1;
-            
+
 
             console.log(enemyGroup);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
@@ -407,10 +412,21 @@ function enemySpawning() {
     }
 }
 
-function killenemy(_bullet, _ssss) {
+function killenemy(_ssss) {
     _ssss.remove();
-    bulletCollidesSolid();
+    bullet.remove();
+    // bulletCollidesSolid();
 }
+
+
+/*******************************************************/
+// bulletCollidesSolid()
+/*******************************************************/
+function bulletCollidesSolid() {
+    bullet.remove();
+}
+
+
 /*******************************************************/
 // playerMovement()
 /*******************************************************/
@@ -515,15 +531,6 @@ function playerCollidesSolid() {
 }
 
 
-
-/*******************************************************/
-// bulletCollidesSolid()
-/*******************************************************/
-function bulletCollidesSolid() {
-    fireBullet = false;
-}
-
-
 /*******************************************************/
 // playerCollidesEnemy()
 /*******************************************************/
@@ -588,7 +595,6 @@ function roundOver() {
 /*******************************************************/
 // createRock()
 /*******************************************************/
-
 //create a rock
 function createRock() {
     // x position modifiers to stop rocks from generating behind or overlapping sidebar; needs a better fix.
@@ -621,14 +627,6 @@ function createRock() {
     // corresponding to its place in the rockGroup/Array
 }
 
-//delete a rock
-/*
-function deleteRock() {
-    console.log("rock self collision test");
-    _ssss.remove();
-    createRock();
-}
-*/
 
 /*******************************************************/
 //  END of code
