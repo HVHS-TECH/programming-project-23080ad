@@ -43,6 +43,9 @@ var playerScale = 40;
 let invincabilityFrames = false;
 var playerHealth = 0;
 
+//bullet collision with player minimiser 
+const BULLET_ALIGNER = 18;
+
 //ENEMIES
 
 //Enemy spawning variables
@@ -112,11 +115,9 @@ function setup() {
     player.rotationLock = 1;
     player.layer = 1;
 
-    //create the fired bullet
-    // bullet = new Sprite(windowWidth / 2, windowHeight / 2, 20, 30, 'd');
-    // bullet.rotationLock = 1;
-
+    //create a group for the fired bullet
     bulletGroup = new Group();
+    bulletGroup.rotationLock = 1;
     bulletGroup.collider = 'Dynamic';
 
 
@@ -200,34 +201,8 @@ function draw() {
         //direct the Hollow Purple
         //hollow_purple.moveTo(mouse, 10);
 
-        //make the bullet go to the player until shot
-        if (kb.pressed('Space')) {
-            bulletGroup.visible = true;
-            bulletGroup.rotationLock = 1;
-
-            bullet = new Sprite(player.x, player.y, 20, 'k');
-            bullet.color = 'red';
-
-            bulletGroup.add(bullet);
-
-            if (!bulletGroup.collided(player)) {
-                bullet.collider = 'displacement';
-                
-                console.log(bullet.collider);
-            }
-            bullet.moveTowards(mouse);
-            bullet.speed = 5;
-        }
-
-        //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
-
-        //makes it so that bullets are removed when they touch rocks enemies or border walls. also removes enemies when they collide with bullets.
-        bulletGroup.collides(rockGroup, bulletCollidesSolid);
-        bulletGroup.collides(bulletGroup, bulletCollidesSolid);
-        bulletGroup.colliding(borderGroup, bulletCollidesSolid);
-        enemyGroup.colliding(bulletGroup, killenemy);
-        //bulletGroup.rotateTowards(mouse, 0.1);
-
+        //FIRED BULLETS
+        bulletFires();
 
         //ENEMY SPAWNING
         enemySpawning();
@@ -418,10 +393,61 @@ function enemySpawning() {
     }
 }
 
+
+/*******************************************************/
+// bulletFires()
+/*******************************************************/
+function bulletFires(){
+    
+        //offsets every spawned bullet from the player based on mouses position relative to the player,
+        //so that they cannot collide with the player upon being spawned.
+        if (mouse.x > player.x){
+            bulletAlignX = BULLET_ALIGNER;
+        } else if (mouse.x < player.x){
+            bulletAlignX = -1*BULLET_ALIGNER;
+        } 
+        
+        if (mouse.y > player.y){
+            bulletAlignY = BULLET_ALIGNER;
+        } else if (mouse.y < player.y){
+            bulletAlignY = -1*BULLET_ALIGNER;
+        }
+
+
+        //make the bullet go to the player until shot
+        if (kb.pressed('Space')) {
+            bulletGroup.visible = true;
+
+            bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
+            bullet.color = 'red';
+            bulletGroup.add(bullet);
+
+            bullet.moveTowards(mouse);
+            bullet.speed = 5;
+        }
+
+        //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
+
+        //makes it so that bullets are removed when they touch rocks enemies or border walls. also removes enemies when they collide with bullets.
+        bulletGroup.collides(rockGroup, bulletCollidesSolid);
+        bulletGroup.collides(bulletGroup, bulletCollidesSolid);
+        bulletGroup.colliding(borderGroup, bulletCollidesSolid);
+        enemyGroup.colliding(bulletGroup, killenemy);
+        //bulletGroup.rotateTowards(mouse, 0.1);
+
+
+}
+
+
+/*******************************************************/
+// killEnemy()
+/*******************************************************/
 function killenemy(_ssss) {
     _ssss.remove();
     bullet.remove();
-    // bulletCollidesSolid();
+    for(i = 0; i < 5; i++){
+        finalScore++;
+    }
 }
 
 
