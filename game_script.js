@@ -43,9 +43,6 @@ var playerScale = 40;
 let invincabilityFrames = false;
 var playerHealth = 0;
 
-//bullet variables
-var counter = 0;
-
 //ENEMIES
 
 //Enemy spawning variables
@@ -208,23 +205,22 @@ function draw() {
             bulletGroup.visible = true;
             bulletGroup.rotationLock = 1;
 
-            bullet = new Sprite(player.x, player.y, 20, 'd');
+            bullet = new Sprite(player.x, player.y, 20, 'k');
             bullet.color = 'red';
-            // counter++;
-            // bullet.name = "bullet" + counter;
+
             bulletGroup.add(bullet);
+
+            if (!bulletGroup.collided(player)) {
+                bullet.collider = 'displacement';
+                
+                console.log(bullet.collider);
+            }
             bullet.moveTowards(mouse);
             bullet.speed = 5;
         }
-        
+
         //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
-        if (bulletGroup.colliding(player)){
-            bullet.collider = 'static';
-            
-        } else if (!bulletGroup.colliding(player)){
-            bullet.collider = 'displacement';
-        }
-        
+
         //makes it so that bullets are removed when they touch rocks enemies or border walls. also removes enemies when they collide with bullets.
         bulletGroup.collides(rockGroup, bulletCollidesSolid);
         bulletGroup.collides(bulletGroup, bulletCollidesSolid);
