@@ -260,9 +260,10 @@ function startRound() {
     roundEnd = false;
 
 
-    //removing all enemies from enemyGroup and deleting them
+    //removing all enemies, rocks and bullets from their respective groups and deleting them
     enemyGroup.removeAll();
     rockGroup.removeAll();
+    bulletGroup.removeAll();
 
     //resset player stats & send them to their start location
     playerHealth = 5;
@@ -415,7 +416,7 @@ function bulletFires(){
 
 
         //make the bullet go to the player until shot
-        if (kb.pressed('Space')) {
+        if (mouse.pressed()) {
             bulletGroup.visible = true;
 
             bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
@@ -466,34 +467,34 @@ function playerMovement() {
 
 
     //LEFT
-    if (kb.pressing('left')) {
+    if (kb.pressing('left' || 'a')) {
         player.vel.x = playerVel * -1;
     }
-    else if (kb.released('left')) {
+    else if (kb.released('left' || 'a')) {
         player.vel.x = 0;
     }
 
     //RIGHT
-    if (kb.pressing('right')) {
+    if (kb.pressing('right' || 'd')) {
         player.vel.x = playerVel;
     }
-    else if (kb.released('right')) {
+    else if (kb.released('right' || 'd')) {
         player.vel.x = 0;
     }
 
     //UP
-    if (kb.pressing('up')) {
+    if (kb.pressing('up' || 'w')) {
         player.vel.y = playerVel * -1;
     }
-    else if (kb.released('up')) {
+    else if (kb.released('up' || 'w')) {
         player.vel.y = 0;
     }
 
     //DOWN
-    if (kb.pressing('down')) {
+    if (kb.pressing('down' || 's')) {
         player.vel.y = playerVel;
     }
-    else if (kb.released('down')) {
+    else if (kb.released('down' || 's')) {
         player.vel.y = 0;
     }
 
@@ -555,7 +556,6 @@ function gamePause() {
 /*******************************************************/
 // playerCollidesSolid()
 /*******************************************************/
-
 //stop the player from bouncing off rocks
 function playerCollidesSolid() {
     player.vel.x = 0;
@@ -619,6 +619,12 @@ function roundOver() {
         player.vel.x = 0;
         player.vel.y = 0;
     }
+    
+    //removing all enemiesand bullets from their respective groups and deleting them
+    enemyGroup.removeAll();
+    bulletGroup.removeAll();
+
+
     newRoundButton.show();
 
 }
