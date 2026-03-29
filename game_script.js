@@ -43,6 +43,9 @@ var playerScale = 40;
 let invincabilityFrames = false;
 var playerHealth = 0;
 
+//bullet variables
+var counter = 0;
+
 //ENEMIES
 
 //Enemy spawning variables
@@ -204,22 +207,29 @@ function draw() {
         if (kb.pressed('Space')) {
             bulletGroup.visible = true;
             bulletGroup.rotationLock = 1;
-            // mouse.x = targetX;
-            // mouse.y = targetY;
 
-            bullet = new Sprite(windowWidth / 2, windowHeight / 2, 20, 'd');
+            bullet = new Sprite(player.x, player.y, 20, 'd');
+            bullet.color = 'red';
+            // counter++;
+            // bullet.name = "bullet" + counter;
             bulletGroup.add(bullet);
-            bulletGroup.moveTowards(mouse);
+            bullet.moveTowards(mouse);
+            bullet.speed = 5;
         }
-
-        // if (fireBullet == false) {
-        //     bullet.x = player.x - playerScale;
-        //     bullet.y = player.y - playerScale;
-        // }
-
-        //rockGroup.collides(bulletGroup, bulletCollidesSolid);
-        borderGroup.collides(bulletGroup, bulletCollidesSolid);
-        enemyGroup.collides(bulletGroup, killenemy);
+        
+        //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
+        if (bulletGroup.colliding(player)){
+            bullet.collider = 'static';
+            
+        } else if (!bulletGroup.colliding(player)){
+            bullet.collider = 'displacement';
+        }
+        
+        //makes it so that bullets are removed when they touch rocks enemies or border walls. also removes enemies when they collide with bullets.
+        bulletGroup.collides(rockGroup, bulletCollidesSolid);
+        bulletGroup.collides(bulletGroup, bulletCollidesSolid);
+        bulletGroup.colliding(borderGroup, bulletCollidesSolid);
+        enemyGroup.colliding(bulletGroup, killenemy);
         //bulletGroup.rotateTowards(mouse, 0.1);
 
 
@@ -422,8 +432,8 @@ function killenemy(_ssss) {
 /*******************************************************/
 // bulletCollidesSolid()
 /*******************************************************/
-function bulletCollidesSolid() {
-    bullet.remove();
+function bulletCollidesSolid(_ssss) {
+    _ssss.remove();
 }
 
 
