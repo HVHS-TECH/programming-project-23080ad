@@ -375,7 +375,7 @@ function enemySpawning() {
 
             //spawns an enemy from the left edge  of screen
 
-            bossChance = random(100, 100);
+            bossChance = random(1, 100);
 
             //add generic details to a encompasing if statement
             enemyScale = floor(random(20, 61));
@@ -385,7 +385,7 @@ function enemySpawning() {
                     enemy = new Sprite(0, random(0, windowHeight), enemyScale, enemyScale);
 
                 } else if (bossChance = 100) {
-                    enemy = new Sprite(0, random(0, windowHeight), enemyScale * 10, enemyScale * 10);
+                    enemy = new Sprite(0, random(0, windowHeight), 100, 100);
                 }
 
             }
@@ -398,7 +398,7 @@ function enemySpawning() {
                     //which is why we have both the minus side bar width and the minus 5 for thoss reasons in that order.
                     enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale, enemyScale);
                 } else if (bossChance = 100) {
-                    enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale * 10, enemyScale * 10);
+                    enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), 100, 100);
                 }
             }
 
@@ -408,7 +408,7 @@ function enemySpawning() {
                 if (bossChance != 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
-                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale * 10, enemyScale * 10);
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, 100, 100);
                 }
             }
 
@@ -418,7 +418,7 @@ function enemySpawning() {
                 if (bossChance != 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
-                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale * 10, enemyScale * 10);
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, 100,  100);
                 }
             }
 
@@ -486,9 +486,11 @@ function bulletFires() {
 /*******************************************************/
 // killEnemy()
 /*******************************************************/
-function killenemy(_ssss) {
+function killenemy(_ssss, _bullet) {
     _ssss.remove();
-    bullet.remove();
+    //this makes sure the bullet that made contact with the enemies
+    //is deleted rather than defaulting too the most recent bullet spawned
+    _bullet.remove();
 
     //gain 4 score per enemy kill
     for (i = 0; i < 2; i++) {
