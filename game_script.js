@@ -156,8 +156,8 @@ function setup() {
     game_Controls.color = 'tan';
 
     //create the pause screen
-    //note that this is created nearly last so it appears as an overlay to everything else
-    pause_indicator = new Sprite(windowWidth / 2, windowHeight / 1.75, windowWidth, windowHeight, 'n');
+    //note this sprite has a layer of 3 while all others have a layer of 2 so it appears as an overlay to everything else.
+    pause_indicator = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n');
     pause_indicator.color = 'black';
     pause_indicator.opacity = 0.5;
     pause_indicator.visible = false;
@@ -165,6 +165,7 @@ function setup() {
     //the text segment of the pause indicator (is drawn over the physical segment).
     pause_indicator.text = 'Paused';
     pause_indicator.textSize = 100;
+    pause_indicator.layer = '3';
 }
 
 /*******************************************************/
@@ -424,10 +425,15 @@ function enemySpawning() {
 
             //adds the newly spawned enemy to the enemy group
             enemyGroup.add(enemy);
-            //only makes grey shades for some reason
-            enemyColor = floor(random(1, 255))
-            enemy.color = enemyColor;
+
+            //only chooses colors in the red part of the spectrum
+            let r = random(200, 255);
+            let g = random(0, 50);
+            let b = random(0, 50);
+            enemy.color = color(r, g, b);
+            
             spawnCounter = 0;
+            enemyGroup.layer = '1';
             console.log(enemyColor);
 
             console.log(enemyGroup);
@@ -465,6 +471,7 @@ function bulletFires() {
         bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
         bullet.color = 'red';
         bulletGroup.add(bullet);
+        bulletGroup.layer = 1;
 
         bullet.moveTowards(mouse);
         bullet.speed = 5;
@@ -688,25 +695,9 @@ function createRock() {
     rockNumber = rockNumber + 1;
     rock.name = "rock " + rockNumber;
     rock.color = 'darkgrey';
-    //for (let i = 0; i < rockGroup.length; i++) {
-    //let rockA = rockGroup[i];
-    //console.log("check 1");
-    /*
-            for (let j = 0; j < rockGroup.length; j++) {
-                let rockB = rockGroup[j];
-                console.log("check 2");
-   
-                if (rockA !== rockB) {
-                    if (rockA.collides(rockB)) {
-                        console.log("check 3");
-                        deleteRock(rockA, rockB);
-                    }
-                }
-            }
-        }
-    */
 
     rockGroup.add(rock);
+    rockGroup.layer = 1;
     console.log(rockGroup);
     // new rock spawned gets a unique name and number
     // corresponding to its place in the rockGroup/Array
