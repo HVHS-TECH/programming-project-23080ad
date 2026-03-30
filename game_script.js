@@ -50,13 +50,12 @@ const BULLET_ALIGNER = 18;
 
 //Enemy spawning variables
 var enemySpawnPositioning = 0;
-var enemyNumber = 0;
+var enemyId = 0;
 var spawnCounter = 0;
-var enemyColor = 0;
 
+var enemyColor = 0;
 var enemyScale = 0;
 var enemySpeed = 0;
-var enemyId = 0;
 
 //rock spawning variables
 var rockNumber = -1;
@@ -70,6 +69,11 @@ var instantPause = 0;
 
 //boss spawn chance
 var bossChance = 0;
+
+//difficulty modifiers
+var difficultyMod = 0;
+let difficultySlider;
+let gameDifficulty;
 
 
 /*******************************************************/
@@ -126,7 +130,6 @@ function setup() {
     bulletGroup.rotationLock = 1;
     bulletGroup.collider = 'Dynamic';
 
-
     //create the hollow purple
     hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
     hollow_purple.mass = 10000000;
@@ -143,7 +146,7 @@ function setup() {
     newRoundButton.position(windowWidth / 2 - buttonX / 2, windowHeight / 1.5);
     newRoundButton.mousePressed(startRound);
 
-    //create abutton which displays the controls when pressed
+    //create a button which displays the controls when pressed
     gameControls = createButton('Controls');
     gameControls.size(100, 50);
     gameControls.position((windowWidth - buttonX) / 2, windowHeight / 1.30);
@@ -167,6 +170,26 @@ function setup() {
     pause_indicator.text = 'Paused';
     pause_indicator.textSize = 100;
     pause_indicator.layer = '3';
+
+    //create the difficulty slider
+    difficultySlider = createSlider(1, 3, 1, 1);
+    difficultySlider.position(windowWidth / 2.45, windowHeight / 1.35);
+    difficultySlider.style('transform','rotate(270deg)');
+
+    //create the describing text for the difficulty slider
+    difficulty_slider_text = new Sprite((windowWidth / 2.35), (windowHeight / 1.35) -20, 110, 200, 'n');
+    difficulty_slider_text.color = 'tan';
+    difficulty_slider_text.text = "Difficulty \n\n Hard           \n\n Medium      \n\n Easy          ";
+    difficulty_slider_text.textSize = 20;
+    
+
+    //create the game over background overlay
+    round_ended_overlay = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n');
+    round_ended_overlay.color = 'black';
+    round_ended_overlay.opacity = 0.5;
+    round_ended_overlay.visible = false;
+    round_ended_overlay.layer = 2;
+
 }
 
 /*******************************************************/
@@ -247,8 +270,8 @@ function draw() {
         stroke(1);
         strokeWeight(4); fill('white');
         textAlign(CENTER);
-        textSize(50);
-        text("YOU SURVIVED " + clockTime + " SECONDS", windowWidth / 2, (windowHeight / 2) - 100);
+        textSize(70);
+        text("ROUND OVER:", windowWidth / 2, (windowHeight / 2) -140);
         strokeWeight(1);
     }
 
@@ -256,7 +279,16 @@ function draw() {
         stroke(1);
         strokeWeight(4); fill('white');
         textAlign(CENTER);
-        textSize(50);
+        textSize(30);
+        text("YOU SURVIVED " + clockTime + " SECONDS ON \n" + gameDifficulty + " DIFFICULTY!", windowWidth / 2, (windowHeight / 2) - 100);
+        strokeWeight(1);
+    }
+
+    if (roundEnd) {
+        stroke(1);
+        strokeWeight(4); fill('white');
+        textAlign(CENTER);
+        textSize(30);
         text("FINAL SCORE: " + finalScore, windowWidth / 2, windowHeight / 2);
         strokeWeight(1);
     }
@@ -267,8 +299,8 @@ function draw() {
         strokeWeight(4);
         fill('white');
         textAlign(CENTER);
-        textSize(50);
-        text("HIGH SCORE: " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
+        textSize(30);
+        text("HIGH SCORE: " + highScore, windowWidth / 2, (windowHeight / 2) + 40);
         strokeWeight(1);
     }
 
@@ -304,16 +336,34 @@ function startRound() {
 
     //hiding elemnets from/setting up the start screen
     start_backdrop.visible = false;
+    showTitle = false;
+
     Side_Bar.visible = true;
     BorderR.visible = true;
-    showTitle = false;
+
     pause_indicator.visible = false;
+    round_ended_overlay.visible = false;
+
     newRoundButton.hide();
     gameControls.hide();
+    difficultySlider.hide();
+    difficulty_slider_text.visible = false;
 
-    //reset score applied at game ned from kills
+    //reset score earned from kills
     scoreFromKills = 0;
 
+    //scale the rounds difficulty based on the difficulty sliders value
+    difficultyMod = (difficultySlider.value() * 10);
+
+    //sets the game difficulty for the game over message
+    if (difficultySlider.value() == 1) {
+        gameDifficulty = "Easy";
+    } else if (difficultySlider.value() == 2) {
+        gameDifficulty = "Medium";
+    } else if (difficultySlider.value() == 3) {
+        gameDifficulty = "Hard";
+    }
+    
     //reseting and starting the clock
     clockStartTime = millis();
     clockIsOn = true;
@@ -350,7 +400,10 @@ function enemySpawning() {
                 // Use rotateTo to instantly face the target
                 enemy.rotateTowards(player, 0.05);
                 enemy.moveTowards(player);
-                enemy.speed = floor(red(enemy.color) / 100);
+
+
+                enemy.speed = floor(red(enemy.color) / (5 * difficultyMod));
+
             }
         }
 
@@ -363,10 +416,10 @@ function enemySpawning() {
         // Due to the minute differences 4.999 should be reasonable
 
         //Spawn an enemy every 5/3 seconds
-        if (spawnCounter < (5 / 3) * gameSpeed) {
+        if (spawnCounter < ((50 / 3) / (0.5 * difficultyMod)) * gameSpeed) {
             spawnCounter++;
         }
-        else if (spawnCounter >= (5 / 3) * gameSpeed) {
+        else if (spawnCounter >= ((50 / 3) / (0.5 * difficultyMod)) * gameSpeed) {
 
             // since our frame rate is set to 60fps, the draw loop runs that many times per second.
             // so to spawn an enemy every five seconds we make the counter tick up to (5/3 x the "gameSpeed" variable)
@@ -384,7 +437,6 @@ function enemySpawning() {
             //add generic details to a encompasing if statement
             enemyScale = floor(random(20, 61));
             if (enemySpawnPositioning == 1) {
-                enemyNumber = enemyNumber + 1;
                 if (bossChance != 100) {
                     enemy = new Sprite(0, random(0, windowHeight), enemyScale, enemyScale);
 
@@ -396,7 +448,6 @@ function enemySpawning() {
 
             //spawns an enemy from the right edge  of screen
             else if (enemySpawnPositioning == 2) {
-                enemyNumber = enemyNumber + 1;
                 if (bossChance != 100) {
                     //this is so enemies dont spawn behind or in the sidebar
                     //which is why we have both the minus side bar width and the minus 5 for thoss reasons in that order.
@@ -408,7 +459,6 @@ function enemySpawning() {
 
             //spawns an enemy from the top edge  of screen
             else if (enemySpawnPositioning == 3) {
-                enemyNumber = enemyNumber + 1;
                 if (bossChance != 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
@@ -418,7 +468,6 @@ function enemySpawning() {
 
             //spawns an enemy from the bottom edge of screen
             else if (enemySpawnPositioning == 4) {
-                enemyNumber = enemyNumber + 1;
                 if (bossChance != 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
@@ -429,11 +478,12 @@ function enemySpawning() {
             //adds the newly spawned enemy to the enemy group
             enemyGroup.add(enemy);
             enemyId++;
-            
+
             //only chooses colors in the red part of the spectrum
-            let red = random(200, 255);
+            let red = random(5 * difficultyMod, 8.5 * difficultyMod);
             let green = random(0, 50);
             let blue = random(0, 50);
+
             enemyColor = color(red, green, blue);
             enemy.color = enemyColor;
 
@@ -442,7 +492,6 @@ function enemySpawning() {
 
             console.log(enemyGroup);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
-            console.log("Enemy Number " + enemyNumber);
             console.log("Enemy ID " + enemyId);
         }
     }
@@ -660,6 +709,8 @@ function roundOver() {
     roundEnd = true;
     console.log("round is Over");
 
+    round_ended_overlay.visible = true;
+
     //freeze the clock
     clockIsOn = false;
 
@@ -685,6 +736,10 @@ function roundOver() {
 
 
     newRoundButton.show();
+    difficultySlider.show();
+    difficulty_slider_text.visible = true;
+    Side_Bar.visible = false;
+    BorderR.visible= false;
 
 }
 
