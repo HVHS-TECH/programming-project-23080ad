@@ -430,11 +430,10 @@ function enemySpawning() {
 
             //set enemy spawn coordinates
 
-            //spawns an enemy from the left edge  of screen
-
+            //random chance for spawned enemy to be a boss
             bossChance = random(1, 100);
 
-            //add generic details to a encompasing if statement
+            //spawns an enemy from the left edge  of screen
             enemyScale = floor(random(20, 61));
             if (enemySpawnPositioning == 1) {
                 if (bossChance != 100) {
@@ -442,6 +441,7 @@ function enemySpawning() {
 
                 } else if (bossChance = 100) {
                     enemy = new Sprite(0, random(0, windowHeight), 100, 100);
+                    enemy.Id = 100;
                 }
 
             }
@@ -454,6 +454,7 @@ function enemySpawning() {
                     enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale, enemyScale);
                 } else if (bossChance = 100) {
                     enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), 100, 100);
+                    enemy.Id = 100;
                 }
             }
 
@@ -463,6 +464,7 @@ function enemySpawning() {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, 100, 100);
+                    enemy.Id = 100;
                 }
             }
 
@@ -472,12 +474,12 @@ function enemySpawning() {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, 100, 100);
+                    enemy.Id = 100;
                 }
             }
 
             //adds the newly spawned enemy to the enemy group
             enemyGroup.add(enemy);
-            enemyId++;
 
             //only chooses colors in the red part of the spectrum
             let red = random(5 * difficultyMod, 8.5 * difficultyMod);
