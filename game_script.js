@@ -52,10 +52,11 @@ const BULLET_ALIGNER = 18;
 var enemySpawnPositioning = 0;
 var enemyNumber = 0;
 var spawnCounter = 0;
+var enemyColor = 0;
 
 var enemyScale = 0;
-var enemyColor = 0;
 var enemySpeed = 0;
+var enemyId = 0;
 
 //rock spawning variables
 var rockNumber = -1;
@@ -150,7 +151,7 @@ function setup() {
 
     //create the Game Controls display
     game_Controls = new Sprite(windowWidth / 2, windowHeight / 2, 600, 300, 'n');
-    game_Controls.text = "MOVEMENT: \n Arrow keys \n\n GOAL: \n Avoid enemies and survive for as long as you can";
+    game_Controls.text = "MOVEMENT: \n Arrow keys or W,A,S,D \n\n ATTACK: \n Mouse click to fire \n\n GOAL: \n Avoid enemies and survive for as long as you can";
     game_Controls.textSize = 20;
     game_Controls.visible = false;
     game_Controls.color = 'tan';
@@ -343,12 +344,14 @@ function enemySpawning() {
     //if the game isnt paused activate the following, otherwise stop enemies from spawning
     if (pauseRun === false) {
 
-        //make spawned enemies move towards the player by targeting their group
+        //make spawned enemies move towards the player at a speed proportional to how bright their color is
         for (let enemy of enemyGroup) {
-            // Use rotateTo to instantly face the target
-            enemy.rotateTowards(player, 0.05);
-            enemy.moveTowards(player);
-            enemy.speed = 3;
+            for (i = 0; i < enemyGroup.length; i++) {
+                // Use rotateTo to instantly face the target
+                enemy.rotateTowards(player, 0.05);
+                enemy.moveTowards(player);
+                enemy.speed = floor(red(enemy.color) / 100);
+            }
         }
 
         //choose which side of the screen enemies spawn from
@@ -419,26 +422,28 @@ function enemySpawning() {
                 if (bossChance != 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
-                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, 100,  100);
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, 100, 100);
                 }
             }
 
             //adds the newly spawned enemy to the enemy group
             enemyGroup.add(enemy);
-
-            //only chooses colors in the red part of the spectrum
-            let r = random(200, 255);
-            let g = random(0, 50);
-            let b = random(0, 50);
-            enemy.color = color(r, g, b);
+            enemyId++;
             
+            //only chooses colors in the red part of the spectrum
+            let red = random(200, 255);
+            let green = random(0, 50);
+            let blue = random(0, 50);
+            enemyColor = color(red, green, blue);
+            enemy.color = enemyColor;
+
             spawnCounter = 0;
             enemyGroup.layer = '1';
-            console.log(enemyColor);
 
             console.log(enemyGroup);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
             console.log("Enemy Number " + enemyNumber);
+            console.log("Enemy ID " + enemyId);
         }
     }
 }
