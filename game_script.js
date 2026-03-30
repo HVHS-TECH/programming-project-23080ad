@@ -61,9 +61,14 @@ var enemySpeed = 0;
 var rockNumber = -1;
 
 //score variables
+var roundScore = 0;
 var finalScore = 0;
+var scoreFromKills = 0;
 var highScore = 0;
 var instantPause = 0;
+
+//boss spawn chance
+var bossChance = 0;
 
 
 /*******************************************************/
@@ -198,6 +203,16 @@ function draw() {
         textSize(32);
         text("Health: " + playerHealth, (windowWidth - (sideBarWidth / 2)), height / 6);
 
+        //set the score to time on the clock plus the score from kills
+        roundScore = clockTime + scoreFromKills;
+
+        // display the players score on screen
+        strokeWeight(1);
+        fill('black');
+        textAlign(CENTER);
+        textSize(32);
+        text("Score: " + roundScore, (windowWidth - (sideBarWidth / 2)), height / 3);
+
         //direct the Hollow Purple
         //hollow_purple.moveTo(mouse, 10);
 
@@ -230,8 +245,17 @@ function draw() {
         stroke(1);
         strokeWeight(4); fill('white');
         textAlign(CENTER);
-        textSize(100);
-        text("FINAL SCORE " + finalScore + "!", windowWidth / 2, windowHeight / 2);
+        textSize(50);
+        text("YOU SURVIVED " + clockTime + " SECONDS", windowWidth / 2, (windowHeight / 2) - 100);
+        strokeWeight(1);
+    }
+
+    if (roundEnd) {
+        stroke(1);
+        strokeWeight(4); fill('white');
+        textAlign(CENTER);
+        textSize(50);
+        text("FINAL SCORE: " + finalScore, windowWidth / 2, windowHeight / 2);
         strokeWeight(1);
     }
 
@@ -242,7 +266,7 @@ function draw() {
         fill('white');
         textAlign(CENTER);
         textSize(50);
-        text("HIGH SCORE " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
+        text("HIGH SCORE: " + highScore, windowWidth / 2, (windowHeight / 2) + 100);
         strokeWeight(1);
     }
 
@@ -285,6 +309,9 @@ function startRound() {
     newRoundButton.hide();
     gameControls.hide();
 
+    //reset score applied at game ned from kills
+    scoreFromKills = 0;
+
     //reseting and starting the clock
     clockStartTime = millis();
     clockIsOn = true;
@@ -319,7 +346,8 @@ function enemySpawning() {
         for (let enemy of enemyGroup) {
             // Use rotateTo to instantly face the target
             enemy.rotateTowards(player, 0.05);
-            enemy.moveTo(player, enemySpeed);
+            enemy.moveTowards(player);
+            enemy.speed = 3;
         }
 
         //choose which side of the screen enemies spawn from
@@ -331,10 +359,10 @@ function enemySpawning() {
         // Due to the minute differences 4.999 should be reasonable
 
         //Spawn an enemy every 5/3 seconds
-        if (spawnCounter < 5 / 3 * gameSpeed) {
+        if (spawnCounter < (5 / 3) * gameSpeed) {
             spawnCounter++;
         }
-        else if (spawnCounter >= 5 / 3 * gameSpeed) {
+        else if (spawnCounter >= (5 / 3) * gameSpeed) {
 
             // since our frame rate is set to 60fps, the draw loop runs that many times per second.
             // so to spawn an enemy every five seconds we make the counter tick up to (5/3 x the "gameSpeed" variable)
@@ -347,34 +375,51 @@ function enemySpawning() {
 
             //spawns an enemy from the left edge  of screen
 
-            //add gebnric details to a encompasing if statement
+            bossChance = random(100, 100);
+
+            //add generic details to a encompasing if statement
             enemyScale = floor(random(20, 61));
             if (enemySpawnPositioning == 1) {
                 enemyNumber = enemyNumber + 1;
-                enemy = new Sprite(0, random(0, windowHeight), enemyScale, enemyScale);
+                if (bossChance != 100) {
+                    enemy = new Sprite(0, random(0, windowHeight), enemyScale, enemyScale);
+
+                } else if (bossChance = 100) {
+                    enemy = new Sprite(0, random(0, windowHeight), enemyScale * 10, enemyScale * 10);
+                }
 
             }
 
             //spawns an enemy from the right edge  of screen
             else if (enemySpawnPositioning == 2) {
                 enemyNumber = enemyNumber + 1;
-                //this is so enemies dont spawn behind or in the sidebar
-                //which is why we have both the minus side bar width and the minus 5 for thoss reasons in that order.
-                enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale, enemyScale);
-
+                if (bossChance != 100) {
+                    //this is so enemies dont spawn behind or in the sidebar
+                    //which is why we have both the minus side bar width and the minus 5 for thoss reasons in that order.
+                    enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale, enemyScale);
+                } else if (bossChance = 100) {
+                    enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale * 10, enemyScale * 10);
+                }
             }
 
             //spawns an enemy from the top edge  of screen
             else if (enemySpawnPositioning == 3) {
                 enemyNumber = enemyNumber + 1;
-                enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
-
+                if (bossChance != 100) {
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
+                } else if (bossChance = 100) {
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale * 10, enemyScale * 10);
+                }
             }
 
             //spawns an enemy from the bottom edge of screen
             else if (enemySpawnPositioning == 4) {
                 enemyNumber = enemyNumber + 1;
-                enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
+                if (bossChance != 100) {
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
+                } else if (bossChance = 100) {
+                    enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale * 10, enemyScale * 10);
+                }
             }
 
             //adds the newly spawned enemy to the enemy group
@@ -384,8 +429,6 @@ function enemySpawning() {
             enemy.color = enemyColor;
             spawnCounter = 0;
             console.log(enemyColor);
-            enemySpeed = 1;
-
 
             console.log(enemyGroup);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
@@ -398,43 +441,43 @@ function enemySpawning() {
 /*******************************************************/
 // bulletFires()
 /*******************************************************/
-function bulletFires(){
-    
-        //offsets every spawned bullet from the player based on mouses position relative to the player,
-        //so that they cannot collide with the player upon being spawned.
-        if (mouse.x > player.x){
-            bulletAlignX = BULLET_ALIGNER;
-        } else if (mouse.x < player.x){
-            bulletAlignX = -1*BULLET_ALIGNER;
-        } 
-        
-        if (mouse.y > player.y){
-            bulletAlignY = BULLET_ALIGNER;
-        } else if (mouse.y < player.y){
-            bulletAlignY = -1*BULLET_ALIGNER;
-        }
+function bulletFires() {
+
+    //offsets every spawned bullet from the player based on mouses position relative to the player,
+    //so that they cannot collide with the player upon being spawned.
+    if (mouse.x > player.x) {
+        bulletAlignX = BULLET_ALIGNER;
+    } else if (mouse.x < player.x) {
+        bulletAlignX = -1 * BULLET_ALIGNER;
+    }
+
+    if (mouse.y > player.y) {
+        bulletAlignY = BULLET_ALIGNER;
+    } else if (mouse.y < player.y) {
+        bulletAlignY = -1 * BULLET_ALIGNER;
+    }
 
 
-        //make the bullet go to the player until shot
-        if (mouse.pressed()) {
-            bulletGroup.visible = true;
+    //make the bullet go to the player until shot
+    if (mouse.pressed()) {
+        bulletGroup.visible = true;
 
-            bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
-            bullet.color = 'red';
-            bulletGroup.add(bullet);
+        bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
+        bullet.color = 'red';
+        bulletGroup.add(bullet);
 
-            bullet.moveTowards(mouse);
-            bullet.speed = 5;
-        }
+        bullet.moveTowards(mouse);
+        bullet.speed = 5;
+    }
 
-        //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
+    //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
 
-        //makes it so that bullets are removed when they touch rocks enemies or border walls. also removes enemies when they collide with bullets.
-        bulletGroup.collides(rockGroup, bulletCollidesSolid);
-        bulletGroup.collides(bulletGroup, bulletCollidesSolid);
-        bulletGroup.colliding(borderGroup, bulletCollidesSolid);
-        enemyGroup.colliding(bulletGroup, killenemy);
-        //bulletGroup.rotateTowards(mouse, 0.1);
+    //makes it so that bullets are removed when they touch rocks enemies or border walls. also removes enemies when they collide with bullets.
+    bulletGroup.collides(rockGroup, bulletCollidesSolid);
+    bulletGroup.collides(bulletGroup, bulletCollidesSolid);
+    bulletGroup.colliding(borderGroup, bulletCollidesSolid);
+    enemyGroup.colliding(bulletGroup, killenemy);
+    //bulletGroup.rotateTowards(mouse, 0.1);
 
 
 }
@@ -446,8 +489,10 @@ function bulletFires(){
 function killenemy(_ssss) {
     _ssss.remove();
     bullet.remove();
-    for(i = 0; i < 5; i++){
-        finalScore++;
+
+    //gain 4 score per enemy kill
+    for (i = 0; i < 2; i++) {
+        scoreFromKills++;
     }
 }
 
@@ -605,7 +650,7 @@ function roundOver() {
     clockIsOn = false;
 
     //calculate final score
-    finalScore = clockTime;
+    finalScore = roundScore;
     if (finalScore > highScore) {
         highScore = finalScore;
     }
@@ -619,7 +664,7 @@ function roundOver() {
         player.vel.x = 0;
         player.vel.y = 0;
     }
-    
+
     //removing all enemiesand bullets from their respective groups and deleting them
     enemyGroup.removeAll();
     bulletGroup.removeAll();
