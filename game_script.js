@@ -74,6 +74,7 @@ var bossChance = 0;
 var difficultyMod = 0;
 let difficultySlider;
 let gameDifficulty;
+var test = 200;
 
 
 /*******************************************************/
@@ -122,6 +123,7 @@ function setup() {
 
     //create the player charcter
     player = new Sprite(windowWidth / 2, windowHeight / 2, playerScale, 'd');
+    player.color = 'cyan';
     player.rotationLock = 1;
     player.layer = 1;
 
@@ -174,14 +176,14 @@ function setup() {
     //create the difficulty slider
     difficultySlider = createSlider(1, 3, 1, 1);
     difficultySlider.position(windowWidth / 2.45, windowHeight / 1.35);
-    difficultySlider.style('transform','rotate(270deg)');
+    difficultySlider.style('transform', 'rotate(270deg)');
 
     //create the describing text for the difficulty slider
-    difficulty_slider_text = new Sprite((windowWidth / 2.35), (windowHeight / 1.35) -20, 110, 200, 'n');
+    difficulty_slider_text = new Sprite((windowWidth / 2.35), (windowHeight / 1.35) - 20, 110, 200, 'n');
     difficulty_slider_text.color = 'tan';
     difficulty_slider_text.text = "Difficulty \n\n Hard           \n\n Medium      \n\n Easy          ";
     difficulty_slider_text.textSize = 20;
-    
+
 
     //create the game over background overlay
     round_ended_overlay = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n');
@@ -209,6 +211,13 @@ function draw() {
         textSize(100);
         textAlign(CENTER);
         text("SURVIVOR", windowWidth / 2, windowHeight / 2);
+    }
+
+
+    if (kb.pressing('h') && kb.pressing('a') && kb.pressing('r') && kb.pressing('d') && difficultySlider.value() == 3) {
+        difficultySlider.elt.max = 4;
+        difficulty_slider_text.text = "Difficulty\n Hell           \n\n Hard           \n\n Medium      \n\n Easy          ";
+        test = 3000;
     }
 
     //when the start button is pressed the main game functions which are supposed to trigger on each iteration of the darw loop activate. once the round ends these effects stop triggering until a new starts where on every value should be reset
@@ -271,7 +280,7 @@ function draw() {
         strokeWeight(4); fill('white');
         textAlign(CENTER);
         textSize(70);
-        text("ROUND OVER:", windowWidth / 2, (windowHeight / 2) -140);
+        text("ROUND OVER:", windowWidth / 2, (windowHeight / 2) - 140);
         strokeWeight(1);
     }
 
@@ -308,7 +317,6 @@ function draw() {
 /*******************************************************/
 // startRound()
 /*******************************************************/
-
 //triggers all events that need to happen when a new round is started.
 //Acts as a start button and a restart button so it must also reset all events from the "round over" state.
 function startRound() {
@@ -353,17 +361,26 @@ function startRound() {
     scoreFromKills = 0;
 
     //scale the rounds difficulty based on the difficulty sliders value
-    difficultyMod = (difficultySlider.value() * 10);
+    if (difficultySlider.value() != 4) {
+        difficultyMod = (difficultySlider.value() * 10);
+    } else if (difficultySlider.value() == 4){
+        difficultyMod = (difficultySlider.value() * 10);
+    }
+    // if (kb.pressing('h')){
+    //     difficultyMod = 4*10;
+    // }
 
     //sets the game difficulty for the game over message
     if (difficultySlider.value() == 1) {
-        gameDifficulty = "Easy";
+        gameDifficulty = "EASY";
     } else if (difficultySlider.value() == 2) {
-        gameDifficulty = "Medium";
+        gameDifficulty = "MEDIUM";
     } else if (difficultySlider.value() == 3) {
-        gameDifficulty = "Hard";
+        gameDifficulty = "HARD";
+    } else if (difficultySlider.value() == 4) {
+        gameDifficulty = "HELL";
     }
-    
+
     //reseting and starting the clock
     clockStartTime = millis();
     clockIsOn = true;
@@ -402,7 +419,8 @@ function enemySpawning() {
                 enemy.moveTowards(player);
 
 
-                enemy.speed = floor(red(enemy.color) / (5 * difficultyMod));
+                enemy.speed = floor((red(enemy.color) / 35));
+               
 
             }
         }
@@ -416,10 +434,10 @@ function enemySpawning() {
         // Due to the minute differences 4.999 should be reasonable
 
         //Spawn an enemy every 5/3 seconds
-        if (spawnCounter < ((50 / 3) / (0.5 * difficultyMod)) * gameSpeed) {
+        if (spawnCounter < ((25 / 3) / (0.5 * difficultyMod)) * gameSpeed) {
             spawnCounter++;
         }
-        else if (spawnCounter >= ((50 / 3) / (0.5 * difficultyMod)) * gameSpeed) {
+        else if (spawnCounter >= ((25 / 3) / (0.5 * difficultyMod)) * gameSpeed) {
 
             // since our frame rate is set to 60fps, the draw loop runs that many times per second.
             // so to spawn an enemy every five seconds we make the counter tick up to (5/3 x the "gameSpeed" variable)
@@ -434,16 +452,14 @@ function enemySpawning() {
             bossChance = random(1, 100);
 
             //spawns an enemy from the left edge  of screen
-            enemyScale = floor(random(20, 61));
+            enemyScale = floor(random(20, 60));
             if (enemySpawnPositioning == 1) {
                 if (bossChance != 100) {
                     enemy = new Sprite(0, random(0, windowHeight), enemyScale, enemyScale);
 
                 } else if (bossChance = 100) {
                     enemy = new Sprite(0, random(0, windowHeight), 100, 100);
-                    enemy.Id = 100;
                 }
-
             }
 
             //spawns an enemy from the right edge  of screen
@@ -454,7 +470,6 @@ function enemySpawning() {
                     enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), enemyScale, enemyScale);
                 } else if (bossChance = 100) {
                     enemy = new Sprite((windowWidth - sideBarWidth) - 5, random(0, windowHeight), 100, 100);
-                    enemy.Id = 100;
                 }
             }
 
@@ -464,7 +479,6 @@ function enemySpawning() {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), 0, 100, 100);
-                    enemy.Id = 100;
                 }
             }
 
@@ -474,15 +488,16 @@ function enemySpawning() {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, enemyScale, enemyScale);
                 } else if (bossChance = 100) {
                     enemy = new Sprite(random(0, (windowWidth - sideBarWidth) - 5), windowHeight - enemyScale, 100, 100);
-                    enemy.Id = 100;
                 }
             }
+
+            //enemyId = enemy.id;
 
             //adds the newly spawned enemy to the enemy group
             enemyGroup.add(enemy);
 
             //only chooses colors in the red part of the spectrum
-            let red = random(5 * difficultyMod, 8.5 * difficultyMod);
+            let red = random(3.75 * difficultyMod, 6.375 * difficultyMod);
             let green = random(0, 50);
             let blue = random(0, 50);
 
@@ -493,6 +508,7 @@ function enemySpawning() {
             enemyGroup.layer = '1';
 
             console.log(enemyGroup);
+            console.log(enemyColor);
             console.log("Enemy Spawned From Edge " + enemySpawnPositioning);
             console.log("Enemy ID " + enemyId);
         }
@@ -521,7 +537,7 @@ function bulletFires() {
 
 
     //make the bullet go to the player until shot
-    if (mouse.pressed()) {
+    if (mouse.pressed() && pauseRun == false) {
         bulletGroup.visible = true;
 
         bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
@@ -594,6 +610,9 @@ function playerMovement() {
 
     //UP
     if (kb.pressing('up' || 'w')) {
+        if (kb.pressing('left' || 'right' || 'a' || 'd')) {
+            player.vel.y = -1 * playerVel / (sqrt(2));
+        }
         player.vel.y = playerVel * -1;
     }
     else if (kb.released('up' || 'w')) {
@@ -602,6 +621,9 @@ function playerMovement() {
 
     //DOWN
     if (kb.pressing('down' || 's')) {
+        if (kb.pressing('left' || 'right' || 'a' || 'd')) {
+            player.vel.y = playerVel / (sqrt(2));
+        }
         player.vel.y = playerVel;
     }
     else if (kb.released('down' || 's')) {
@@ -741,7 +763,7 @@ function roundOver() {
     difficultySlider.show();
     difficulty_slider_text.visible = true;
     Side_Bar.visible = false;
-    BorderR.visible= false;
+    BorderR.visible = false;
 
 }
 
