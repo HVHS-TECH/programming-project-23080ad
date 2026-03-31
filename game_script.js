@@ -25,15 +25,14 @@ var roundEnd = false;
 //formatting variables
 var showTitle = true;
 
+//"round starting button" variables
+var buttonX = 100;
+
 //round timer variables
 let timerButton;
 let clockStartTime = 0;
 let clockIsOn = false;
 let clockTime = 0;
-
-//"round starting button" variables
-var buttonX = 100;
-var buttonY = 50;
 
 //In round player variables
 var playerVel = 5;
@@ -55,7 +54,6 @@ var spawnCounter = 0;
 
 var enemyColor = 0;
 var enemyScale = 0;
-var enemySpeed = 0;
 
 //rock spawning variables
 var rockNumber = -1;
@@ -74,7 +72,6 @@ var bossChance = 0;
 var difficultyMod = 0;
 let difficultySlider;
 let gameDifficulty;
-var test = 200;
 
 
 /*******************************************************/
@@ -131,11 +128,6 @@ function setup() {
     bulletGroup = new Group();
     bulletGroup.rotationLock = 1;
     bulletGroup.collider = 'Dynamic';
-
-    //create the hollow purple
-    hollow_purple = new Sprite(0, windowHeight / 2.5, 20, 'd')
-    hollow_purple.mass = 10000000;
-    hollow_purple.color = 'purple';
 
     //create the start screen backdrop
     start_backdrop = new Sprite(windowWidth / 2, windowHeight / 2, windowWidth, windowHeight, 'n');
@@ -213,11 +205,10 @@ function draw() {
         text("SURVIVOR", windowWidth / 2, windowHeight / 2);
     }
 
-
+    // if the special "hard" code is entered, enables the ability to selcet hell difficulty for all future runs
     if (kb.pressing('h') && kb.pressing('a') && kb.pressing('r') && kb.pressing('d') && difficultySlider.value() == 3) {
         difficultySlider.elt.max = 4;
         difficulty_slider_text.text = "Difficulty\n Hell           \n\n Hard           \n\n Medium      \n\n Easy          ";
-        test = 3000;
     }
 
     //when the start button is pressed the main game functions which are supposed to trigger on each iteration of the darw loop activate. once the round ends these effects stop triggering until a new starts where on every value should be reset
@@ -247,9 +238,6 @@ function draw() {
         textSize(32);
         text("Score: " + roundScore, (windowWidth - (sideBarWidth / 2)), height / 3);
 
-        //direct the Hollow Purple
-        //hollow_purple.moveTo(mouse, 10);
-
         //FIRED BULLETS
         bulletFires();
 
@@ -268,13 +256,9 @@ function draw() {
 
         //PAUSE
         gamePause();
-
-        //ROUND OVER triggers
-
-
     }
-    //displays final score
-
+   
+    //display all round over stats
     if (roundEnd) {
         stroke(1);
         strokeWeight(4); fill('white');
@@ -397,8 +381,12 @@ function displayControls() {
     //Ties the new round buttons visibility to that of the title to save me from creating another variable
     if (showTitle == true) {
         newRoundButton.show();
+        difficulty_slider_text.visible = true;
+        difficultySlider.show();
     } else if (showTitle == false) {
         newRoundButton.hide();
+        difficulty_slider_text.visible = false;
+        difficultySlider.hide();
     }
 
 }
@@ -522,7 +510,7 @@ function enemySpawning() {
 function bulletFires() {
 
     //offsets every spawned bullet from the player based on mouses position relative to the player,
-    //so that they cannot collide with the player upon being spawned.
+    //so that they cannot collide with the player upon being spawned normally.
     if (mouse.x > player.x) {
         bulletAlignX = BULLET_ALIGNER;
     } else if (mouse.x < player.x) {
