@@ -198,7 +198,7 @@ function draw() {
     allSprites.draw();
 
     //draw the Title
-    if (showTitle) {
+    if (showTitle && roundEnd == false) {
         fill('white');
         textSize(100);
         textAlign(CENTER);
@@ -259,7 +259,7 @@ function draw() {
     }
    
     //display all round over stats
-    if (roundEnd) {
+    if (roundEnd && game_Controls.visible == false) {
         stroke(1);
         strokeWeight(4); fill('white');
         textAlign(CENTER);
@@ -268,7 +268,7 @@ function draw() {
         strokeWeight(1);
     }
 
-    if (roundEnd) {
+    if (roundEnd && game_Controls.visible == false) {
         stroke(1);
         strokeWeight(4); fill('white');
         textAlign(CENTER);
@@ -277,7 +277,7 @@ function draw() {
         strokeWeight(1);
     }
 
-    if (roundEnd) {
+    if (roundEnd && game_Controls.visible == false) {
         stroke(1);
         strokeWeight(4); fill('white');
         textAlign(CENTER);
@@ -287,7 +287,7 @@ function draw() {
     }
 
     //displays high score
-    if (roundEnd) {
+    if (roundEnd && game_Controls.visible == false) {
         stroke(1);
         strokeWeight(4);
         fill('white');
@@ -378,15 +378,25 @@ function displayControls() {
 
     //hide the title and new round buttons while this menu is open, reveal them when it closes
     showTitle = !showTitle;
-    //Ties the new round buttons visibility to that of the title to save me from creating another variable
-    if (showTitle == true) {
-        newRoundButton.show();
-        difficulty_slider_text.visible = true;
-        difficultySlider.show();
-    } else if (showTitle == false) {
+    //various checks to hide evrything but the controls menu when controls button is pressed once
+    //and to show it all again and the controls menu when the button is pressed agian.
+    if (roundEnd == false && game_Controls.visible == true) {
         newRoundButton.hide();
         difficulty_slider_text.visible = false;
         difficultySlider.hide();
+    } else if (roundEnd == false && game_Controls.visible == false){
+        newRoundButton.show();
+        difficulty_slider_text.visible = true;
+        difficultySlider.show();
+    } else if (roundEnd == true && game_Controls.visible == true) {
+        newRoundButton.hide();
+        difficulty_slider_text.visible = false;
+        difficultySlider.hide();
+
+    } else if (roundEnd == true && game_Controls.visible == false) {
+        newRoundButton.show();
+        difficulty_slider_text.visible = true;
+        difficultySlider.show();
     }
 
 }
@@ -748,6 +758,7 @@ function roundOver() {
 
 
     newRoundButton.show();
+    gameControls.show();
     difficultySlider.show();
     difficulty_slider_text.visible = true;
     Side_Bar.visible = false;
