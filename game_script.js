@@ -72,6 +72,7 @@ var bossChance = 0;
 var difficultyMod = 0;
 let difficultySlider;
 let gameDifficulty;
+var test = 0;
 
 
 /*******************************************************/
@@ -535,9 +536,9 @@ function bulletFires() {
 
 
     //make the bullet go to the player until shot
-    if (mouse.pressed() && pauseRun == false) {
+    if (mouse.pressed() && pauseRun == false && test == 0) {
         bulletGroup.visible = true;
-
+        test++;
         bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
         bullet.color = 'red';
         bulletGroup.add(bullet);
@@ -545,6 +546,7 @@ function bulletFires() {
 
         bullet.moveTowards(mouse);
         bullet.speed = 5;
+        test = test -1;
     }
 
     //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
