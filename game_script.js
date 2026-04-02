@@ -545,7 +545,6 @@ function bulletFires() {
 
         bullet.moveTowards(mouse);
         bullet.speed = 5;
-        test = test -1;
     }
 
     //if the player is touching a bullet it wont affect their momentumn for the duration of their collision
