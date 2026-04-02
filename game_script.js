@@ -72,7 +72,7 @@ var bossChance = 0;
 var difficultyMod = 0;
 let difficultySlider;
 let gameDifficulty;
-var test = 0;
+
 
 
 /*******************************************************/
@@ -536,9 +536,8 @@ function bulletFires() {
 
 
     //make the bullet go to the player until shot
-    if (mouse.pressed() && pauseRun == false && test == 0) {
+    if (mouse.pressed() && pauseRun == false) {
         bulletGroup.visible = true;
-        test++;
         bullet = new Sprite(player.x + bulletAlignX, player.y + bulletAlignY, 20, 'd');
         bullet.color = 'red';
         bulletGroup.add(bullet);
